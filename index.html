@@ -3,19 +3,47 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
 
     <title>SOMA CINEMA</title>
 
-    <meta name="theme-color" content="#111827">
+    <meta name="theme-color" content="#0d1117">
+
+    <meta
+        name="description"
+        content="Construa aqui sua relação pessoal com o cinema."
+    >
 
     <link rel="manifest" href="./manifest.json">
 
-    <link rel="icon" href="./assets/icons/icon-192.png">
+    <link
+        rel="icon"
+        href="./assets/icons/icon-192.png"
+    >
 
-    <link rel="stylesheet" href="./css/reset.css">
-    <link rel="stylesheet" href="./css/variables.css">
-    <link rel="stylesheet" href="./css/base.css">
+    <link
+        rel="apple-touch-icon"
+        href="./assets/icons/icon-192.png"
+    >
+
+    <link
+        rel="stylesheet"
+        href="./css/reset.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="./css/variables.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="./css/base.css"
+    >
 </head>
 
 <body>
@@ -24,23 +52,208 @@
 
         <header class="topbar">
 
-            <div class="logo">
-                🎬 SOMA CINEMA
-            </div>
+          <a
+    class="brand"
+    href="./"
+    aria-label="Página inicial do SOMA Cinema"
+>
+    <img
+        class="brand-isotipo"
+        src="./assets/branding/isotipo-2048.png"
+        alt=""
+        width="48"
+        height="48"
+    >
 
-            <button id="installButton" hidden>
+    <span class="brand-name">
+        SOMA CINEMA
+    </span>
+</a>
+
+            <button
+                id="installButton"
+                type="button"
+                hidden
+            >
                 Instalar
             </button>
 
         </header>
 
         <main id="mainContent">
-            <!-- Todo o conteúdo será criado pelo JavaScript -->
+            <!-- A biblioteca será criada pelo JavaScript -->
         </main>
 
     </div>
 
-    <script type="module" src="./js/app.js"></script>
+    <button
+        id="openAddMovieButton"
+        class="add-movie-button"
+        type="button"
+    >
+        <span aria-hidden="true">+</span>
+        Adicionar filme
+    </button>
+
+    <div
+        id="movieModal"
+        class="movie-modal"
+        aria-hidden="true"
+    >
+        <div
+            class="movie-modal-backdrop"
+            data-close-modal
+        ></div>
+
+        <section
+            class="movie-modal-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="movieModalTitle"
+        >
+            <header class="movie-modal-header">
+
+                <div>
+                    <span class="movie-modal-eyebrow">
+                        NOVO FILME
+                    </span>
+
+                    <h2 id="movieModalTitle">
+                        Adicionar à biblioteca
+                    </h2>
+                </div>
+
+                <button
+                    class="movie-modal-close"
+                    type="button"
+                    aria-label="Fechar"
+                    data-close-modal
+                >
+                    ×
+                </button>
+
+            </header>
+
+            <form id="addMovieForm">
+
+                <div class="movie-form-field">
+                    <label for="movieTitle">
+                        Título
+                    </label>
+
+                    <input
+                        id="movieTitle"
+                        name="titulo"
+                        type="text"
+                        placeholder="Digite o nome do filme"
+                        required
+                    >
+                </div>
+
+                <div class="movie-form-field">
+                    <label for="moviePoster">
+                        Pôster pessoal
+                    </label>
+
+                    <input
+                        id="moviePoster"
+                        name="poster"
+                        type="file"
+                        accept="image/*"
+                    >
+                </div>
+
+                <fieldset class="movie-form-field">
+                    <legend>
+                        Já assistiu?
+                    </legend>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="assistido"
+                            value="true"
+                        >
+                        Sim
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="assistido"
+                            value="false"
+                            checked
+                        >
+                        Não
+                    </label>
+                </fieldset>
+
+                <fieldset class="movie-form-field">
+                    <legend>
+                        Classificação
+                    </legend>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="nota"
+                            value="1"
+                        >
+                        ⭐
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="nota"
+                            value="2"
+                        >
+                        ⭐⭐
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="nota"
+                            value="3"
+                            checked
+                        >
+                        ⭐⭐⭐
+                    </label>
+                </fieldset>
+
+                <div class="movie-modal-actions">
+
+                    <button
+                        class="secondary-button"
+                        type="button"
+                        data-close-modal
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        class="primary-button"
+                        type="submit"
+                    >
+                        Salvar filme
+                    </button>
+
+                </div>
+
+            </form>
+        </section>
+    </div>
+
+    <p class="soma-signature">
+    Construa aqui sua relação pessoal com o cinema.
+</p>
+
+    <script
+    
+        type="module"
+        src="./js/app.js"
+    ></script>
 
 </body>
 

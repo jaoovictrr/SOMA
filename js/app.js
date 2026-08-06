@@ -299,3 +299,57 @@ function mostrarErroNaTela() {
 }
 
 iniciarAplicativo();
+
+function configurarModalAdicionarFilme() {
+    const modal = document.querySelector("#movieModal");
+    const botaoAbrir = document.querySelector("#openAddMovieButton");
+    const campoTitulo = document.querySelector("#movieTitle");
+    const botoesFechar = document.querySelectorAll(
+        "[data-close-modal]"
+    );
+
+    if (!modal || !botaoAbrir) {
+        console.error(
+            "Não foi possível encontrar o modal ou o botão de adicionar filme."
+        );
+
+        return;
+    }
+
+    function abrirModal() {
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+
+        document.body.classList.add("modal-open");
+
+        window.setTimeout(() => {
+            campoTitulo?.focus();
+        }, 220);
+    }
+
+    function fecharModal() {
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+
+        document.body.classList.remove("modal-open");
+
+        botaoAbrir.focus();
+    }
+
+    botaoAbrir.addEventListener("click", abrirModal);
+
+    botoesFechar.forEach((botao) => {
+        botao.addEventListener("click", fecharModal);
+    });
+
+    document.addEventListener("keydown", (evento) => {
+        if (
+            evento.key === "Escape" &&
+            modal.classList.contains("is-open")
+        ) {
+            fecharModal();
+        }
+    });
+}
+
+configurarModalAdicionarFilme();
