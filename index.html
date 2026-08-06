@@ -134,120 +134,258 @@
 
             </header>
 
-            <form id="addMovieForm">
+          <form id="addMovieForm">
 
-                <div class="movie-form-field">
-                    <label for="movieTitle">
-                        Título
-                    </label>
+    <input
+        id="movieId"
+        name="id"
+        type="hidden"
+    >
 
-                    <input
-                        id="movieTitle"
-                        name="titulo"
-                        type="text"
-                        placeholder="Digite o nome do filme"
-                        required
-                    >
-                </div>
+    <div class="movie-form-field">
+        <label for="movieTitle">
+            Título
+        </label>
 
-                <div class="movie-form-field">
-                    <label for="moviePoster">
-                        Pôster pessoal
-                    </label>
+        <input
+            id="movieTitle"
+            name="titulo"
+            type="text"
+            placeholder="Digite o nome do filme"
+            maxlength="100"
+            required
+        >
+    </div>
 
-                    <input
-                        id="moviePoster"
-                        name="poster"
-                        type="file"
-                        accept="image/*"
-                    >
-                </div>
+    <div class="movie-form-field">
+        <label for="movieYear">
+            Ano
+        </label>
 
-                <fieldset class="movie-form-field">
-                    <legend>
-                        Já assistiu?
-                    </legend>
+        <input
+            id="movieYear"
+            name="ano"
+            type="number"
+            min="1888"
+            max="2100"
+            placeholder="Ex.: 2014"
+        >
+    </div>
 
-                    <label>
-                        <input
-                            type="radio"
-                            name="assistido"
-                            value="true"
-                        >
-                        Sim
-                    </label>
+    <div class="movie-form-field">
+        <label for="moviePoster">
+            Pôster pessoal
+        </label>
 
-                    <label>
-                        <input
-                            type="radio"
-                            name="assistido"
-                            value="false"
-                            checked
-                        >
-                        Não
-                    </label>
-                </fieldset>
+        <input
+            id="moviePoster"
+            name="poster"
+            type="file"
+            accept="image/*"
+        >
 
-                <fieldset class="movie-form-field">
-                    <legend>
-                        Classificação
-                    </legend>
+        <small class="movie-form-help">
+            Ao editar, deixe este campo vazio para manter o pôster atual.
+        </small>
+    </div>
 
-                    <label>
-                        <input
-                            type="radio"
-                            name="nota"
-                            value="1"
-                        >
-                        ⭐
-                    </label>
+    <fieldset class="movie-form-field">
+        <legend>
+            Já assistiu?
+        </legend>
 
-                    <label>
-                        <input
-                            type="radio"
-                            name="nota"
-                            value="2"
-                        >
-                        ⭐⭐
-                    </label>
+        <div class="movie-form-options">
+            <label>
+                <input
+                    type="radio"
+                    name="assistido"
+                    value="true"
+                >
+                Sim
+            </label>
 
-                    <label>
-                        <input
-                            type="radio"
-                            name="nota"
-                            value="3"
-                            checked
-                        >
-                        ⭐⭐⭐
-                    </label>
-                </fieldset>
+            <label>
+                <input
+                    type="radio"
+                    name="assistido"
+                    value="false"
+                    checked
+                >
+                Não
+            </label>
+        </div>
+    </fieldset>
 
-                <div class="movie-modal-actions">
+    <div class="movie-form-field">
+        <label for="movieWatchCount">
+            Quantas vezes assistiu?
+        </label>
 
-                    <button
-                        class="secondary-button"
-                        type="button"
-                        data-close-modal
-                    >
-                        Cancelar
-                    </button>
+        <input
+            id="movieWatchCount"
+            name="vezesAssistido"
+            type="number"
+            min="0"
+            max="9999"
+            value="0"
+        >
+    </div>
 
-                    <button
-                        class="primary-button"
-                        type="submit"
-                    >
-                        Salvar filme
-                    </button>
+  <fieldset class="movie-form-field">
+    <legend>
+        Classificação
+    </legend>
 
-                </div>
+    <div
+        class="rating-selector"
+        aria-label="Classificação do filme"
+    >
+        <input
+            id="movieRating1"
+            type="radio"
+            name="nota"
+            value="1"
+        >
 
-            </form>
+        <label
+            for="movieRating1"
+            title="Gostei"
+        >
+            ★
+        </label>
+
+        <input
+            id="movieRating2"
+            type="radio"
+            name="nota"
+            value="2"
+        >
+
+        <label
+            for="movieRating2"
+            title="Gostei muito"
+        >
+            ★
+        </label>
+
+        <input
+            id="movieRating3"
+            type="radio"
+            name="nota"
+            value="3"
+            checked
+        >
+
+        <label
+            for="movieRating3"
+            title="Guardei comigo"
+        >
+            ★
+        </label>
+    </div>
+
+    <small
+        id="ratingDescription"
+        class="movie-form-help"
+    >
+        Guardei comigo
+    </small>
+    
+</fieldset>
+
+    <div class="movie-modal-actions">
+
+        <button
+            class="secondary-button"
+            type="button"
+            data-close-modal
+        >
+            Cancelar
+        </button>
+
+        <button
+            id="saveMovieButton"
+            class="primary-button"
+            type="submit"
+        >
+            Salvar filme
+        </button>
+
+    </div>
+
+</form>
+
         </section>
     </div>
 
     <p class="soma-signature">
     Construa aqui sua relação pessoal com o cinema.
 </p>
+
+<div
+    id="privacyModal"
+    class="privacy-modal"
+    aria-hidden="true"
+>
+    <div
+        class="privacy-modal-backdrop"
+        data-close-privacy
+    ></div>
+
+    <section
+        class="privacy-modal-dialog"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="privacyModalTitle"
+        aria-describedby="privacyModalDescription"
+    >
+        <div
+            class="privacy-modal-icon"
+            aria-hidden="true"
+        >
+            🔓
+        </div>
+
+        <div class="privacy-modal-content">
+            <span class="privacy-modal-eyebrow">
+                PRIVACIDADE
+            </span>
+
+            <h2 id="privacyModalTitle">
+                Tornar este filme público?
+            </h2>
+
+            <p id="privacyModalDescription">
+                Quando estiver público, outras pessoas poderão
+                descobrir este filme através da sua coleção.
+            </p>
+
+            <p
+                id="privacyMovieName"
+                class="privacy-movie-name"
+            ></p>
+        </div>
+
+        <div class="privacy-modal-actions">
+            <button
+                id="cancelPrivacyButton"
+                class="secondary-button"
+                type="button"
+                data-close-privacy
+            >
+                Manter privado
+            </button>
+
+            <button
+                id="confirmPrivacyButton"
+                class="primary-button"
+                type="button"
+            >
+                Tornar público
+            </button>
+        </div>
+    </section>
+</div>
 
     <script
     

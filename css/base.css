@@ -1007,3 +1007,321 @@ body.modal-open {
         display: none;
     }
 }
+/* ========================================
+   SELETOR DE 3 ESTRELAS
+======================================== */
+
+.rating-selector {
+    display: inline-flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.rating-selector input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.rating-selector label {
+    color: rgba(245, 189, 67, 0.28);
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+
+    transition:
+        color 160ms ease,
+        transform 160ms ease,
+        filter 160ms ease;
+}
+
+.rating-selector label:hover {
+    transform: translateY(-2px) scale(1.08);
+}
+
+.rating-selector input:checked + label,
+.rating-selector:has(#movieRating2:checked) label:nth-of-type(-n + 2),
+.rating-selector:has(#movieRating3:checked) label:nth-of-type(-n + 3) {
+    color: #f5bd43;
+    filter: drop-shadow(
+        0 0 8px rgba(245, 189, 67, 0.3)
+    );
+}
+
+/* ========================================
+   BOTÃO EDITAR NO CARD
+======================================== */
+
+.botao-editar-filme {
+    position: absolute;
+    z-index: 5;
+    right: 12px;
+    bottom: 58px;
+
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+
+    padding: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+
+    color: #f8fafc;
+    background: rgba(7, 11, 17, 0.72);
+    backdrop-filter: blur(8px);
+
+    font-size: 1.15rem;
+    line-height: 1;
+
+    cursor: pointer;
+
+    opacity: 0;
+    transform: translateY(5px);
+
+    transition:
+        opacity 180ms ease,
+        transform 180ms ease,
+        background-color 180ms ease;
+}
+
+.movie-card:hover .botao-editar-filme,
+.botao-editar-filme:focus-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.botao-editar-filme:hover {
+    background: rgba(245, 189, 67, 0.88);
+    color: #15110a;
+}
+
+@media (hover: none) {
+    .botao-editar-filme {
+        opacity: 1;
+        transform: none;
+    }
+}
+/* ========================================
+   CONTROLES DE PRIVACIDADE
+======================================== */
+
+.movie-card-controles-direita {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: auto;
+}
+
+.botao-privacidade {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    padding: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 50%;
+
+    color: #dce3ed;
+    background: rgba(5, 10, 18, 0.72);
+    backdrop-filter: blur(8px);
+
+    font: inherit;
+    font-size: 0.9rem;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        transform 180ms ease,
+        color 180ms ease,
+        background-color 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.botao-privacidade:hover {
+    transform: scale(1.08);
+}
+
+.botao-privacidade:active {
+    transform: scale(0.9);
+}
+
+.botao-privacidade.privado {
+    color: #d5dbe5;
+}
+
+.botao-privacidade.publico {
+    color: #181207;
+    border-color: rgba(255, 214, 112, 0.75);
+    background: #f5bd43;
+
+    box-shadow:
+        0 0 0 5px rgba(5, 10, 18, 0.3),
+        0 0 18px rgba(245, 189, 67, 0.4);
+}
+
+/* ========================================
+   MODAL DE PRIVACIDADE
+======================================== */
+
+.privacy-modal {
+    position: fixed;
+    z-index: 130;
+    inset: 0;
+
+    display: grid;
+    place-items: center;
+    padding: 24px;
+
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+
+    transition:
+        opacity 220ms ease,
+        visibility 220ms ease;
+}
+
+.privacy-modal.is-open {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.privacy-modal-backdrop {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(2, 6, 12, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.privacy-modal-dialog {
+    position: relative;
+    z-index: 1;
+
+    width: min(100%, 460px);
+    padding: 30px;
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+
+    color: #f8fafc;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(23, 30, 41, 0.99),
+            rgba(9, 14, 22, 0.99)
+        );
+
+    box-shadow:
+        0 30px 90px rgba(0, 0, 0, 0.68);
+
+    transform: translateY(22px) scale(0.97);
+
+    transition:
+        transform 240ms ease;
+}
+
+.privacy-modal.is-open .privacy-modal-dialog {
+    transform: translateY(0) scale(1);
+}
+
+.privacy-modal-icon {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+
+    margin-bottom: 20px;
+
+    border: 1px solid rgba(245, 189, 67, 0.34);
+    border-radius: 18px;
+
+    background: rgba(245, 189, 67, 0.09);
+
+    font-size: 1.6rem;
+}
+
+.privacy-modal-eyebrow {
+    display: block;
+    margin-bottom: 7px;
+
+    color: #f5bd43;
+
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+}
+
+.privacy-modal-content h2 {
+    margin: 0 0 12px;
+
+    color: #ffffff;
+
+    font-size: clamp(1.45rem, 4vw, 1.9rem);
+    line-height: 1.2;
+}
+
+.privacy-modal-content > p {
+    margin: 0;
+
+    color: #aeb7c4;
+
+    font-size: 0.94rem;
+    line-height: 1.65;
+}
+
+.privacy-movie-name {
+    margin-top: 18px !important;
+    padding: 12px 14px;
+
+    border-left: 3px solid #f5bd43;
+    border-radius: 0 10px 10px 0;
+
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.045);
+
+    font-weight: 700;
+}
+
+.privacy-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    margin-top: 28px;
+}
+
+@media (max-width: 600px) {
+    .privacy-modal {
+        align-items: end;
+        padding: 0;
+    }
+
+    .privacy-modal-dialog {
+        width: 100%;
+        padding: 26px 20px;
+
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: 24px 24px 0 0;
+    }
+
+    .privacy-modal-actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .privacy-modal-actions button {
+        width: 100%;
+    }
+}

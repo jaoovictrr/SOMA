@@ -1,7 +1,19 @@
 const CAMINHO_DADOS = "./data/movies.json";
-const CHAVE_STORAGE = "soma-filmes-v1";
+const CHAVE_STORAGE = "soma-filmes-v2";
 
 let filmes = [];
+let abrirEditorDeFilme = null;
+let filmeAguardandoPublicacao = null;
+
+/*
+    Esta variável receberá a função responsável por abrir
+    o modal preenchido com os dados de um filme.
+*/
+
+
+/* ========================================
+   INICIALIZAÇÃO
+======================================== */
 
 async function iniciarAplicativo() {
     try {
@@ -11,12 +23,21 @@ async function iniciarAplicativo() {
 
         renderizarBiblioteca();
         ativarInteracoes();
+        configurarModalAdicionarFilme();
+        configurarModalPrivacidade();
     } catch (erro) {
-        console.error("Erro ao iniciar o SOMA Cinema:", erro);
+        console.error(
+            "Erro ao iniciar o SOMA Cinema:",
+            erro
+        );
+
         mostrarErroNaTela();
     }
 
-    // Service Worker temporariamente desativado durante o desenvolvimento.
+    /*
+        Service Worker temporariamente desativado
+        durante o desenvolvimento.
+    */
 }
 
 async function carregarFilmesDoJson() {
@@ -31,33 +52,140 @@ async function carregarFilmesDoJson() {
     return resposta.json();
 }
 
+/* ========================================
+   ARMAZENAMENTO LOCAL
+======================================== */
+
 function carregarEstadoLocal(filmesDoJson) {
     try {
-        const dadosSalvos = localStorage.getItem(CHAVE_STORAGE);
+        const dadosSalvos = localStorage.getItem(
+            CHAVE_STORAGE
+        );
 
         if (!dadosSalvos) {
-            return filmesDoJson;
+            return normalizarFilmes(filmesDoJson);
         }
 
         const filmesSalvos = JSON.parse(dadosSalvos);
 
-        return filmesDoJson.map((filmeOriginal) => {
-            const filmeSalvo = filmesSalvos.find(
-                (filme) => filme.id === filmeOriginal.id
+        if (!Array.isArray(filmesSalvos)) {
+            return normalizarFilmes(filmesDoJson);
+        }
+
+        const filmesOriginaisAtualizados =
+            filmesDoJson.map((filmeOriginal) => {
+                const filmeSalvo = filmesSalvos.find(
+                    (filme) =>
+                        String(filme.id) ===
+                        String(filmeOriginal.id)
+                );
+
+                return filmeSalvo
+                    ? {
+                          ...filmeOriginal,
+                          ...filmeSalvo
+                      }
+                    : filmeOriginal;
+            });
+
+        const filmesCriadosPeloUsuario =
+            filmesSalvos.filter(
+                (filme) =>
+                    filme.criadoPeloUsuario === true &&
+                    !filmesDoJson.some(
+                        (filmeOriginal) =>
+                            String(filmeOriginal.id) ===
+                            String(filme.id)
+                    )
             );
 
-            return filmeSalvo
-                ? { ...filmeOriginal, ...filmeSalvo }
-                : filmeOriginal;
-        });
+        return normalizarFilmes([
+            ...filmesCriadosPeloUsuario,
+            ...filmesOriginaisAtualizados
+        ]);
     } catch (erro) {
         console.warn(
             "Não foi possível recuperar os dados locais:",
             erro
         );
 
-        return filmesDoJson;
+        return normalizarFilmes(filmesDoJson);
     }
+}
+
+function normalizarFilmes(listaDeFilmes) {
+    return listaDeFilmes.map((filme) => ({
+        id: filme.id ?? criarIdUnico(),
+
+        titulo: String(
+            filme.titulo || "Filme sem título"
+        ),
+
+        ano: filme.ano ?? "—",
+
+        generos: Array.isArray(filme.generos)
+            ? filme.generos
+            : ["Coleção pessoal"],
+
+        poster:
+            filme.poster ||
+            criarPosterPadrao(
+                String(
+                    filme.titulo ||
+                    "Filme sem título"
+                )
+            ),
+
+        assistido: Boolean(filme.assistido),
+
+        favorito: Boolean(filme.favorito),
+
+        vezesAssistido: Math.max(
+            0,
+            Number(filme.vezesAssistido) || 0
+        ),
+
+        nota: converterNotaParaTresEstrelas(
+            filme.nota
+        ),
+
+        filmeConforto: Boolean(
+            filme.filmeConforto
+        ),
+
+        privacidade:
+            filme.privacidade || "privado",
+
+        criadoPeloUsuario:
+            filme.criadoPeloUsuario === true
+    }));
+}
+
+function converterNotaParaTresEstrelas(
+    notaOriginal
+) {
+    const nota = Number(notaOriginal) || 0;
+
+    if (nota <= 0) {
+        return 0;
+    }
+
+    if (nota <= 3) {
+        return Math.round(nota);
+    }
+
+    /*
+        Conversão do sistema antigo de cinco estrelas:
+
+        4 estrelas antigas = 2 estrelas novas
+        5 estrelas antigas = 3 estrelas novas
+    */
+
+    if (nota === 5) {
+        return 3;
+    }
+
+    return 2;
 }
 
 function salvarEstadoLocal() {
@@ -71,14 +199,27 @@ function salvarEstadoLocal() {
             "Não foi possível salvar os dados locais:",
             erro
         );
+
+        throw new Error(
+            "O armazenamento do navegador está cheio."
+        );
     }
 }
 
+/* ========================================
+   BIBLIOTECA
+======================================== */
+
 function renderizarBiblioteca() {
-    const mainContent = document.querySelector("#mainContent");
+    const mainContent = document.querySelector(
+        "#mainContent"
+    );
 
     if (!mainContent) {
-        console.error("O elemento #mainContent não foi encontrado.");
+        console.error(
+            "O elemento #mainContent não foi encontrado."
+        );
+
         return;
     }
 
@@ -94,16 +235,27 @@ function renderizarBiblioteca() {
                 </div>
 
                 <span class="biblioteca-total">
-                    ${filmes.length} filmes
+                    ${filmes.length}
+                    ${
+                        filmes.length === 1
+                            ? "filme"
+                            : "filmes"
+                    }
                 </span>
             </div>
 
             <div class="lista-filmes">
-                ${filmes.map(criarMovieCard).join("")}
+                ${filmes
+                    .map(criarMovieCard)
+                    .join("")}
             </div>
         </section>
     `;
 }
+
+/* ========================================
+   MOVIE CARD
+======================================== */
 
 function criarMovieCard(filme) {
     const generos = filme.generos
@@ -117,6 +269,25 @@ function criarMovieCard(filme) {
     const classeFavorito = filme.favorito
         ? "ativo"
         : "";
+
+    const filmePublico =
+        filme.privacidade === "publico";
+
+    const classePrivacidade = filmePublico
+        ? "publico"
+        : "privado";
+
+    const simboloPrivacidade = filmePublico
+        ? "🔓"
+        : "🔒";
+
+    const textoPrivacidade = filmePublico
+        ? "Filme público"
+        : "Filme privado";
+
+    const ariaPrivacidade = filmePublico
+        ? `Tornar ${filme.titulo} privado`
+        : `Tornar ${filme.titulo} público`;
 
     const textoAssistido = filme.assistido
         ? "Assistido"
@@ -161,18 +332,45 @@ function criarMovieCard(filme) {
                             ◉
                         </span>
 
-                        <span>${filme.vezesAssistido}</span>
+                        <span>
+                            ${filme.vezesAssistido}
+                        </span>
                     </button>
 
-                    <button
-                        class="botao-assistido ${classeAssistido}"
-                        type="button"
-                        data-action="alternar-assistido"
-                        aria-pressed="${filme.assistido}"
-                        aria-label="${ariaAssistido}"
-                        title="${textoAssistido}"
-                    ></button>
+                    <div class="movie-card-controles-direita">
+                        <button
+                            class="botao-assistido ${classeAssistido}"
+                            type="button"
+                            data-action="alternar-assistido"
+                            aria-pressed="${filme.assistido}"
+                            aria-label="${ariaAssistido}"
+                            title="${textoAssistido}"
+                        ></button>
+
+                        <button
+                            class="botao-privacidade ${classePrivacidade}"
+                            type="button"
+                            data-action="alternar-privacidade"
+                            aria-pressed="${filmePublico}"
+                            aria-label="${ariaPrivacidade}"
+                            title="${textoPrivacidade}"
+                        >
+                            <span aria-hidden="true">
+                                ${simboloPrivacidade}
+                            </span>
+                        </button>
+                    </div>
                 </div>
+
+                <button
+                    class="botao-editar-filme"
+                    type="button"
+                    data-action="editar-filme"
+                    aria-label="Editar ${filme.titulo}"
+                    title="Editar filme"
+                >
+                    ⋯
+                </button>
 
                 <div class="movie-card-degrade"></div>
 
@@ -188,7 +386,7 @@ function criarMovieCard(filme) {
                     <div class="movie-card-rodape">
                         <div
                             class="movie-card-nota"
-                            aria-label="Nota ${filme.nota} de 5"
+                            aria-label="Classificação ${filme.nota} de 3"
                         >
                             ${criarEstrelas(filme.nota)}
                         </div>
@@ -211,24 +409,44 @@ function criarMovieCard(filme) {
 }
 
 function criarEstrelas(nota) {
+    const notaLimitada = Math.max(
+        0,
+        Math.min(Number(nota) || 0, 3)
+    );
+
     let estrelas = "";
 
-    for (let numero = 1; numero <= 5; numero += 1) {
-        estrelas += numero <= nota
-            ? "★"
-            : "☆";
+    for (
+        let numero = 1;
+        numero <= 3;
+        numero += 1
+    ) {
+        estrelas +=
+            numero <= notaLimitada
+                ? "★"
+                : "☆";
     }
 
     return estrelas;
 }
 
+/* ========================================
+   INTERAÇÕES DOS CARDS
+======================================== */
+
 function ativarInteracoes() {
-    const mainContent = document.querySelector("#mainContent");
+    const mainContent = document.querySelector(
+        "#mainContent"
+    );
 
     if (!mainContent) {
         return;
     }
 
+    /*
+        O evento fica no mainContent. Assim os cards
+        podem ser recriados sem perder os cliques.
+    */
     mainContent.addEventListener(
         "click",
         tratarCliqueNoCard
@@ -236,7 +454,9 @@ function ativarInteracoes() {
 }
 
 function tratarCliqueNoCard(evento) {
-    const botao = evento.target.closest("[data-action]");
+    const botao = evento.target.closest(
+        "[data-action]"
+    );
 
     if (!botao) {
         return;
@@ -248,10 +468,11 @@ function tratarCliqueNoCard(evento) {
         return;
     }
 
-    const filmeId = Number(card.dataset.id);
+    const filmeId = String(card.dataset.id);
 
     const filme = filmes.find(
-        (item) => item.id === filmeId
+        (item) =>
+            String(item.id) === filmeId
     );
 
     if (!filme) {
@@ -260,12 +481,52 @@ function tratarCliqueNoCard(evento) {
 
     const acao = botao.dataset.action;
 
+    /*
+        ALTERAÇÃO — abre o modal no modo edição.
+    */
+    if (acao === "editar-filme") {
+        if (
+            typeof abrirEditorDeFilme ===
+            "function"
+        ) {
+            abrirEditorDeFilme(filme);
+        }
+
+        return;
+    }
+    if (acao === "alternar-privacidade") {
+    if (filme.privacidade === "publico") {
+        filme.privacidade = "privado";
+
+        salvarEstadoLocal();
+        renderizarBiblioteca();
+
+        return;
+    }
+
+    filmeAguardandoPublicacao = filme;
+
+    document.dispatchEvent(
+        new CustomEvent(
+            "soma:confirmar-publicacao",
+            {
+                detail: {
+                    filme
+                }
+            }
+        )
+    );
+
+    return;
+}
+
     if (acao === "alternar-favorito") {
         filme.favorito = !filme.favorito;
     }
 
     if (acao === "alternar-assistido") {
-        filme.assistido = !filme.assistido;
+        filme.assistido =
+            !filme.assistido;
 
         if (
             filme.assistido &&
@@ -275,7 +536,10 @@ function tratarCliqueNoCard(evento) {
         }
     }
 
-    if (acao === "adicionar-visualizacao") {
+    if (
+        acao ===
+        "adicionar-visualizacao"
+    ) {
         filme.vezesAssistido += 1;
         filme.assistido = true;
     }
@@ -284,8 +548,743 @@ function tratarCliqueNoCard(evento) {
     renderizarBiblioteca();
 }
 
+/* ========================================
+   MODAL — ADICIONAR E EDITAR FILME
+======================================== */
+
+function configurarModalAdicionarFilme() {
+    const modal = document.querySelector(
+        "#movieModal"
+    );
+
+    const botaoAbrir = document.querySelector(
+        "#openAddMovieButton"
+    );
+
+    const formulario = document.querySelector(
+        "#addMovieForm"
+    );
+
+    const campoId = document.querySelector(
+        "#movieId"
+    );
+
+    const campoTitulo = document.querySelector(
+        "#movieTitle"
+    );
+
+    const campoAno = document.querySelector(
+        "#movieYear"
+    );
+
+    const campoPoster = document.querySelector(
+        "#moviePoster"
+    );
+
+    const campoVisualizacoes =
+        document.querySelector(
+            "#movieWatchCount"
+        );
+
+    const tituloModal = document.querySelector(
+        "#movieModalTitle"
+    );
+
+    const legendaModal = document.querySelector(
+        ".movie-modal-eyebrow"
+    );
+
+    const botaoSalvar = document.querySelector(
+        "#saveMovieButton"
+    );
+
+    const botoesFechar =
+        document.querySelectorAll(
+            "[data-close-modal]"
+        );
+
+    if (
+        !modal ||
+        !botaoAbrir ||
+        !formulario ||
+        !campoId ||
+        !campoTitulo ||
+        !campoAno ||
+        !campoPoster ||
+        !campoVisualizacoes ||
+        !tituloModal ||
+        !legendaModal ||
+        !botaoSalvar
+    ) {
+        console.error(
+            "Não foi possível configurar o formulário de filmes."
+        );
+
+        return;
+    }
+
+    const conteudoOriginalBotao =
+        botaoAbrir.innerHTML;
+
+    function mostrarModal() {
+        modal.classList.add("is-open");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        document.body.classList.add(
+            "modal-open"
+        );
+
+        window.setTimeout(() => {
+            campoTitulo.focus();
+        }, 220);
+    }
+
+    /*
+        Prepara o formulário vazio para adicionar
+        um filme completamente novo.
+    */
+    function prepararNovoFilme() {
+        formulario.reset();
+
+        campoId.value = "";
+        campoVisualizacoes.value = "0";
+
+        tituloModal.textContent =
+            "Adicionar à biblioteca";
+
+        legendaModal.textContent =
+            "NOVO FILME";
+
+        botaoSalvar.textContent =
+            "Salvar filme";
+
+        restaurarOpcoesPadrao(
+            formulario
+        );
+
+        mostrarModal();
+    }
+
+    /*
+        ALTERAÇÃO — preenche o formulário com os
+        dados do filme escolhido.
+    */
+    function prepararEdicao(filme) {
+        formulario.reset();
+
+        campoId.value = String(filme.id);
+
+        campoTitulo.value =
+            filme.titulo;
+
+        campoAno.value =
+            filme.ano === "—"
+                ? ""
+                : String(filme.ano);
+
+        campoVisualizacoes.value =
+            String(
+                filme.vezesAssistido || 0
+            );
+
+        const opcaoAssistido =
+            formulario.querySelector(
+                `input[name="assistido"][value="${filme.assistido}"]`
+            );
+
+        if (opcaoAssistido) {
+            opcaoAssistido.checked = true;
+        }
+
+        const nota = Math.max(
+            1,
+            Math.min(
+                Number(filme.nota) || 1,
+                3
+            )
+        );
+
+        const opcaoNota =
+            formulario.querySelector(
+                `input[name="nota"][value="${nota}"]`
+            );
+
+        if (opcaoNota) {
+            opcaoNota.checked = true;
+        }
+
+        tituloModal.textContent =
+            "Editar filme";
+
+        legendaModal.textContent =
+            "SUA COLEÇÃO";
+
+        botaoSalvar.textContent =
+            "Salvar alterações";
+
+        mostrarModal();
+    }
+
+    function fecharModal() {
+        modal.classList.remove("is-open");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        document.body.classList.remove(
+            "modal-open"
+        );
+
+        botaoAbrir.focus();
+    }
+
+    /*
+        Essa função identifica se estamos criando
+        ou editando por meio do campo movieId.
+    */
+    async function salvarFilme(evento) {
+        evento.preventDefault();
+
+        const dadosFormulario =
+            new FormData(formulario);
+
+        const idEmEdicao = String(
+            campoId.value || ""
+        );
+
+        const titulo = String(
+            dadosFormulario.get("titulo") ||
+                ""
+        ).trim();
+
+        const anoDigitado = String(
+            dadosFormulario.get("ano") ||
+                ""
+        ).trim();
+
+        const assistidoMarcado =
+            dadosFormulario.get(
+                "assistido"
+            ) === "true";
+
+        let vezesAssistido = Math.max(
+            0,
+            Number(
+                dadosFormulario.get(
+                    "vezesAssistido"
+                )
+            ) || 0
+        );
+
+        if (
+            assistidoMarcado &&
+            vezesAssistido === 0
+        ) {
+            vezesAssistido = 1;
+        }
+
+        const assistido =
+            assistidoMarcado ||
+            vezesAssistido > 0;
+
+        const nota = Math.max(
+            1,
+            Math.min(
+                Number(
+                    dadosFormulario.get(
+                        "nota"
+                    )
+                ) || 1,
+                3
+            )
+        );
+
+        const arquivoPoster =
+            campoPoster.files?.[0];
+
+        if (!titulo) {
+            campoTitulo.focus();
+            return;
+        }
+
+        botaoSalvar.disabled = true;
+        botaoSalvar.textContent =
+            "Salvando...";
+
+        let filmeExistente = null;
+
+        try {
+            filmeExistente = idEmEdicao
+                ? filmes.find(
+                      (filme) =>
+                          String(filme.id) ===
+                          idEmEdicao
+                  )
+                : null;
+
+            let poster;
+
+            /*
+                Ao editar, se nenhuma imagem nova for
+                escolhida, conservamos o pôster atual.
+            */
+            if (arquivoPoster) {
+                poster =
+                    await processarPoster(
+                        arquivoPoster
+                    );
+            } else if (filmeExistente) {
+                poster =
+                    filmeExistente.poster;
+            } else {
+                poster =
+                    criarPosterPadrao(titulo);
+            }
+
+            if (filmeExistente) {
+                /*
+                    ALTERAÇÃO — atualiza o objeto existente,
+                    sem criar um filme duplicado.
+                */
+                filmeExistente.titulo =
+                    titulo;
+
+                filmeExistente.ano =
+                    anoDigitado || "—";
+
+                filmeExistente.poster =
+                    poster;
+
+                filmeExistente.assistido =
+                    assistido;
+
+                filmeExistente.vezesAssistido =
+                    vezesAssistido;
+
+                filmeExistente.nota =
+                    nota;
+            } else {
+                const novoFilme = {
+                    id: criarIdUnico(),
+
+                    titulo,
+
+                    ano:
+                        anoDigitado || "—",
+
+                    generos: [
+                        "Coleção pessoal"
+                    ],
+
+                    poster,
+
+                    assistido,
+
+                    favorito: false,
+
+                    vezesAssistido,
+
+                    nota,
+
+                    filmeConforto: false,
+
+                    privacidade:
+                        "privado",
+
+                    criadoPeloUsuario:
+                        true
+                };
+
+                filmes.unshift(novoFilme);
+            }
+
+            salvarEstadoLocal();
+            renderizarBiblioteca();
+
+            formulario.reset();
+            campoId.value = "";
+
+            fecharModal();
+
+            mostrarConfirmacaoNoBotao(
+                botaoAbrir,
+                conteudoOriginalBotao,
+                Boolean(filmeExistente)
+            );
+        } catch (erro) {
+            console.error(
+                "Não foi possível salvar o filme:",
+                erro
+            );
+
+            window.alert(
+                "Não foi possível salvar as alterações. Tente novamente."
+            );
+        } finally {
+            botaoSalvar.disabled = false;
+
+            botaoSalvar.textContent =
+                idEmEdicao
+                    ? "Salvar alterações"
+                    : "Salvar filme";
+        }
+    }
+
+    /*
+        Torna a função de edição disponível para
+        os botões existentes nos cards.
+    */
+    abrirEditorDeFilme =
+        prepararEdicao;
+
+    botaoAbrir.addEventListener(
+        "click",
+        prepararNovoFilme
+    );
+
+    botoesFechar.forEach((botao) => {
+        botao.addEventListener(
+            "click",
+            fecharModal
+        );
+    });
+
+    formulario.addEventListener(
+        "submit",
+        salvarFilme
+    );
+
+    document.addEventListener(
+        "keydown",
+        (evento) => {
+            if (
+                evento.key === "Escape" &&
+                modal.classList.contains(
+                    "is-open"
+                )
+            ) {
+                fecharModal();
+            }
+        }
+    );
+}
+
+function restaurarOpcoesPadrao(
+    formulario
+) {
+    const opcaoNaoAssistido =
+        formulario.querySelector(
+            'input[name="assistido"][value="false"]'
+        );
+
+    const opcaoTresEstrelas =
+        formulario.querySelector(
+            'input[name="nota"][value="3"]'
+        );
+
+    if (opcaoNaoAssistido) {
+        opcaoNaoAssistido.checked = true;
+    }
+
+    if (opcaoTresEstrelas) {
+        opcaoTresEstrelas.checked = true;
+    }
+}
+
+function mostrarConfirmacaoNoBotao(
+    botao,
+    conteudoOriginal,
+    foiEdicao = false
+) {
+    botao.classList.add(
+        "filme-adicionado"
+    );
+
+    botao.innerHTML = `
+        <span aria-hidden="true">
+            ✓
+        </span>
+
+        ${
+            foiEdicao
+                ? "Alterações salvas"
+                : "Filme adicionado"
+        }
+    `;
+
+    window.setTimeout(() => {
+        botao.classList.remove(
+            "filme-adicionado"
+        );
+
+        botao.innerHTML =
+            conteudoOriginal;
+    }, 1600);
+}
+
+/* ========================================
+   PROCESSAMENTO DO PÔSTER
+======================================== */
+
+async function processarPoster(arquivo) {
+    if (
+        !arquivo.type.startsWith(
+            "image/"
+        )
+    ) {
+        throw new Error(
+            "O arquivo escolhido não é uma imagem."
+        );
+    }
+
+    const imagem =
+        await carregarImagemLocal(
+            arquivo
+        );
+
+    const canvas =
+        document.createElement("canvas");
+
+    const contexto =
+        canvas.getContext("2d");
+
+    if (!contexto) {
+        throw new Error(
+            "O navegador não conseguiu preparar a imagem."
+        );
+    }
+
+    const larguraFinal = 600;
+    const alturaFinal = 900;
+
+    canvas.width = larguraFinal;
+    canvas.height = alturaFinal;
+
+    const proporcaoImagem =
+        imagem.naturalWidth /
+        imagem.naturalHeight;
+
+    const proporcaoPoster =
+        larguraFinal / alturaFinal;
+
+    let larguraCorte;
+    let alturaCorte;
+    let origemX;
+    let origemY;
+
+    if (
+        proporcaoImagem >
+        proporcaoPoster
+    ) {
+        alturaCorte =
+            imagem.naturalHeight;
+
+        larguraCorte =
+            alturaCorte *
+            proporcaoPoster;
+
+        origemX =
+            (imagem.naturalWidth -
+                larguraCorte) /
+            2;
+
+        origemY = 0;
+    } else {
+        larguraCorte =
+            imagem.naturalWidth;
+
+        alturaCorte =
+            larguraCorte /
+            proporcaoPoster;
+
+        origemX = 0;
+
+        origemY =
+            (imagem.naturalHeight -
+                alturaCorte) /
+            2;
+    }
+
+    contexto.drawImage(
+        imagem,
+        origemX,
+        origemY,
+        larguraCorte,
+        alturaCorte,
+        0,
+        0,
+        larguraFinal,
+        alturaFinal
+    );
+
+    return canvas.toDataURL(
+        "image/webp",
+        0.72
+    );
+}
+
+function carregarImagemLocal(arquivo) {
+    return new Promise(
+        (resolver, rejeitar) => {
+            const enderecoTemporario =
+                URL.createObjectURL(
+                    arquivo
+                );
+
+            const imagem =
+                new Image();
+
+            imagem.onload = () => {
+                URL.revokeObjectURL(
+                    enderecoTemporario
+                );
+
+                resolver(imagem);
+            };
+
+            imagem.onerror = () => {
+                URL.revokeObjectURL(
+                    enderecoTemporario
+                );
+
+                rejeitar(
+                    new Error(
+                        "Não foi possível abrir a imagem escolhida."
+                    )
+                );
+            };
+
+            imagem.src =
+                enderecoTemporario;
+        }
+    );
+}
+
+function criarPosterPadrao(titulo) {
+    const tituloSeguro =
+        escaparTextoSvg(titulo).slice(
+            0,
+            32
+        );
+
+    const svg = `
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="600"
+            height="900"
+            viewBox="0 0 600 900"
+        >
+            <defs>
+                <linearGradient
+                    id="fundo"
+                    x1="0"
+                    y1="0"
+                    x2="1"
+                    y2="1"
+                >
+                    <stop
+                        offset="0%"
+                        stop-color="#161e2a"
+                    />
+
+                    <stop
+                        offset="100%"
+                        stop-color="#070b11"
+                    />
+                </linearGradient>
+            </defs>
+
+            <rect
+                width="600"
+                height="900"
+                fill="url(#fundo)"
+            />
+
+            <circle
+                cx="300"
+                cy="335"
+                r="82"
+                fill="none"
+                stroke="#f5bd43"
+                stroke-width="8"
+                opacity="0.82"
+            />
+
+            <circle
+                cx="300"
+                cy="335"
+                r="18"
+                fill="#f5bd43"
+            />
+
+            <text
+                x="300"
+                y="545"
+                text-anchor="middle"
+                fill="#ffffff"
+                font-family="Arial, sans-serif"
+                font-size="38"
+                font-weight="700"
+            >
+                ${tituloSeguro}
+            </text>
+
+            <text
+                x="300"
+                y="605"
+                text-anchor="middle"
+                fill="#8995a5"
+                font-family="Arial, sans-serif"
+                font-size="22"
+            >
+                SOMA CINEMA
+            </text>
+        </svg>
+    `;
+
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
+        svg
+    )}`;
+}
+
+function escaparTextoSvg(texto) {
+    return String(texto)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&apos;");
+}
+
+function criarIdUnico() {
+    if (
+        "crypto" in window &&
+        typeof crypto.randomUUID ===
+            "function"
+    ) {
+        return crypto.randomUUID();
+    }
+
+    return `${Date.now()}-${Math.random()
+        .toString(16)
+        .slice(2)}`;
+}
+
+/* ========================================
+   ERRO
+======================================== */
+
 function mostrarErroNaTela() {
-    const mainContent = document.querySelector("#mainContent");
+    const mainContent =
+        document.querySelector(
+            "#mainContent"
+        );
 
     if (!mainContent) {
         return;
@@ -297,59 +1296,127 @@ function mostrarErroNaTela() {
         </p>
     `;
 }
+/* ========================================
+   PRIVACIDADE DOS FILMES
+======================================== */
 
-iniciarAplicativo();
-
-function configurarModalAdicionarFilme() {
-    const modal = document.querySelector("#movieModal");
-    const botaoAbrir = document.querySelector("#openAddMovieButton");
-    const campoTitulo = document.querySelector("#movieTitle");
-    const botoesFechar = document.querySelectorAll(
-        "[data-close-modal]"
+function configurarModalPrivacidade() {
+    const modal = document.querySelector(
+        "#privacyModal"
     );
 
-    if (!modal || !botaoAbrir) {
+    const nomeFilme = document.querySelector(
+        "#privacyMovieName"
+    );
+
+    const botaoConfirmar = document.querySelector(
+        "#confirmPrivacyButton"
+    );
+
+    const botoesFechar =
+        document.querySelectorAll(
+            "[data-close-privacy]"
+        );
+
+    if (
+        !modal ||
+        !nomeFilme ||
+        !botaoConfirmar
+    ) {
         console.error(
-            "Não foi possível encontrar o modal ou o botão de adicionar filme."
+            "Não foi possível configurar o modal de privacidade."
         );
 
         return;
     }
 
-    function abrirModal() {
-        modal.classList.add("is-open");
-        modal.setAttribute("aria-hidden", "false");
+    function abrirModal(filme) {
+        filmeAguardandoPublicacao = filme;
 
-        document.body.classList.add("modal-open");
+        nomeFilme.textContent =
+            filme.titulo;
+
+        modal.classList.add("is-open");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        document.body.classList.add(
+            "modal-open"
+        );
 
         window.setTimeout(() => {
-            campoTitulo?.focus();
+            botaoConfirmar.focus();
         }, 220);
     }
 
     function fecharModal() {
         modal.classList.remove("is-open");
-        modal.setAttribute("aria-hidden", "true");
 
-        document.body.classList.remove("modal-open");
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
 
-        botaoAbrir.focus();
+        document.body.classList.remove(
+            "modal-open"
+        );
+
+        filmeAguardandoPublicacao = null;
     }
 
-    botaoAbrir.addEventListener("click", abrirModal);
+    function confirmarPublicacao() {
+        if (!filmeAguardandoPublicacao) {
+            fecharModal();
+            return;
+        }
+
+        filmeAguardandoPublicacao.privacidade =
+            "publico";
+
+        salvarEstadoLocal();
+        renderizarBiblioteca();
+
+        fecharModal();
+    }
+
+    document.addEventListener(
+        "soma:confirmar-publicacao",
+        (evento) => {
+            const filme = evento.detail?.filme;
+
+            if (filme) {
+                abrirModal(filme);
+            }
+        }
+    );
+
+    botaoConfirmar.addEventListener(
+        "click",
+        confirmarPublicacao
+    );
 
     botoesFechar.forEach((botao) => {
-        botao.addEventListener("click", fecharModal);
+        botao.addEventListener(
+            "click",
+            fecharModal
+        );
     });
 
-    document.addEventListener("keydown", (evento) => {
-        if (
-            evento.key === "Escape" &&
-            modal.classList.contains("is-open")
-        ) {
-            fecharModal();
+    document.addEventListener(
+        "keydown",
+        (evento) => {
+            if (
+                evento.key === "Escape" &&
+                modal.classList.contains(
+                    "is-open"
+                )
+            ) {
+                fecharModal();
+            }
         }
-    });
+    );
 }
-
-configurarModalAdicionarFilme();
+iniciarAplicativo();
