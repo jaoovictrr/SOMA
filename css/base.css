@@ -306,3 +306,359 @@ body {
 
 
 }
+/* ========================================
+   BIBLIOTECA
+======================================== */
+
+#mainContent {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+}
+
+.biblioteca {
+    width: 100%;
+}
+
+.biblioteca-cabecalho {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.biblioteca-legenda {
+    display: block;
+    margin-bottom: 6px;
+    color: #f5b800;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+}
+
+.biblioteca-cabecalho h2 {
+    margin: 0;
+    color: #f8fafc;
+    font-size: clamp(1.8rem, 4vw, 2.7rem);
+    line-height: 1.1;
+}
+
+.biblioteca-total {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+.lista-filmes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 22px;
+}
+
+/* ========================================
+   MOVIE CARD
+======================================== */
+
+.movie-card {
+    min-width: 0;
+}
+
+.movie-card-poster {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 18px;
+    background: #111827;
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.28);
+    transition:
+        transform 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.movie-card-poster:hover {
+    transform: translateY(-5px);
+    border-color: rgba(245, 184, 0, 0.5);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.42);
+}
+
+.movie-card-poster > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.movie-card-topo {
+    position: absolute;
+    z-index: 3;
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+.contador-visualizacoes,
+.botao-assistido,
+.botao-favorito {
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+}
+
+.contador-visualizacoes {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 32px;
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    color: #ffffff;
+    background: rgba(5, 10, 18, 0.72);
+    backdrop-filter: blur(8px);
+    pointer-events: auto;
+}
+
+.botao-assistido {
+    width: 22px;
+    height: 22px;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    background: rgba(5, 10, 18, 0.42);
+    box-shadow: 0 0 0 6px rgba(5, 10, 18, 0.32);
+    pointer-events: auto;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        transform 160ms ease;
+}
+
+.botao-assistido:hover {
+    transform: scale(1.08);
+}
+
+.botao-assistido.ativo {
+    border-color: #f5b800;
+    background: #f5b800;
+}
+
+.movie-card-degrade {
+    position: absolute;
+    inset: 34% 0 0;
+    z-index: 1;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(5, 10, 18, 0),
+            rgba(5, 10, 18, 0.38) 28%,
+            rgba(5, 10, 18, 0.92) 72%,
+            #050a12 100%
+        );
+    pointer-events: none;
+}
+
+.movie-card-informacoes {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 24px 18px 16px;
+    color: #ffffff;
+}
+
+.movie-card-ano {
+    display: block;
+    margin-bottom: 5px;
+    color: #d1d5db;
+    font-size: 0.78rem;
+}
+
+.movie-card-informacoes h3 {
+    overflow: hidden;
+    margin: 0 0 6px;
+    color: #ffffff;
+    font-size: 1.08rem;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.movie-card-informacoes p {
+    overflow: hidden;
+    margin: 0;
+    color: #aeb7c4;
+    font-size: 0.75rem;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.movie-card-rodape {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.movie-card-nota {
+    overflow: hidden;
+    color: #f5b800;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.botao-favorito {
+    display: grid;
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    padding: 0;
+    color: #d1d5db;
+    font-size: 1.45rem;
+    line-height: 1;
+    background: transparent;
+    transition:
+        color 160ms ease,
+        transform 160ms ease;
+}
+
+.botao-favorito:hover {
+    transform: scale(1.1);
+}
+
+.botao-favorito.ativo {
+    color: #ff4545;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+@media (max-width: 700px) {
+    #mainContent {
+        padding: 24px 16px 48px;
+    }
+
+    .biblioteca-cabecalho {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .lista-filmes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .movie-card-poster {
+        border-radius: 14px;
+    }
+
+    .movie-card-informacoes {
+        padding: 20px 12px 12px;
+    }
+
+    .movie-card-informacoes h3 {
+        font-size: 0.9rem;
+    }
+
+    .movie-card-informacoes p {
+        font-size: 0.64rem;
+    }
+
+    .movie-card-nota {
+        font-size: 0.78rem;
+    }
+
+    .contador-visualizacoes {
+        min-height: 28px;
+        padding: 4px 8px;
+        font-size: 0.78rem;
+    }
+
+    .botao-assistido {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+@media (max-width: 370px) {
+    .lista-filmes {
+        grid-template-columns: 1fr;
+    }
+}
+/* ========================================
+   INTERAÇÕES DO MOVIE CARD
+======================================== */
+
+.movie-card-poster > img {
+    transition:
+        transform 320ms ease,
+        filter 320ms ease;
+}
+
+.movie-card-poster:hover > img {
+    transform: scale(1.025);
+    filter: brightness(0.94);
+}
+
+.contador-visualizacoes {
+    transition:
+        transform 160ms ease,
+        background-color 160ms ease;
+}
+
+.contador-visualizacoes:hover {
+    transform: scale(1.06);
+    background: rgba(20, 27, 38, 0.92);
+}
+
+.contador-visualizacoes:active,
+.botao-assistido:active,
+.botao-favorito:active {
+    transform: scale(0.9);
+}
+
+.botao-assistido.ativo {
+    box-shadow:
+        0 0 0 6px rgba(5, 10, 18, 0.32),
+        0 0 18px rgba(245, 184, 0, 0.55);
+}
+
+.botao-favorito.ativo {
+    animation: favoritoAtivado 260ms ease;
+}
+
+@keyframes favoritoAtivado {
+    0% {
+        transform: scale(1);
+    }
+
+    45% {
+        transform: scale(1.35);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.mensagem-erro {
+    margin: 40px auto;
+    color: #fca5a5;
+    text-align: center;
+}
