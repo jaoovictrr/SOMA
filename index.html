@@ -80,6 +80,108 @@
 
         </header>
 
+        <button
+    id="openGenresButton"
+    class="genres-trigger"
+    type="button"
+    aria-controls="genresDrawer"
+    aria-expanded="false"
+>
+    ☰ Gêneros
+</button>
+
+<aside
+    id="genresDrawer"
+    class="genres-drawer"
+    aria-hidden="true"
+>
+    <div class="genres-drawer-header">
+        <h2>Explorar</h2>
+
+        <button
+            id="closeGenresButton"
+            type="button"
+            aria-label="Fechar gêneros"
+        >
+            ×
+        </button>
+    </div>
+
+    <button
+        class="genre-filter special"
+        type="button"
+        data-filter-comfort="true"
+    >
+        🔒 Filmes de conforto
+    </button>
+
+    <div class="genres-list">
+        <button class="genre-filter" data-genre="Todos">
+            Todos
+        </button>
+
+        <button class="genre-filter" data-genre="Ação">
+            Ação
+        </button>
+
+        <button class="genre-filter" data-genre="Animação">
+            Animação
+        </button>
+
+        <button class="genre-filter" data-genre="Aventura">
+            Aventura
+        </button>
+
+        <button class="genre-filter" data-genre="Comédia">
+            Comédia
+        </button>
+
+        <button class="genre-filter" data-genre="Documentário">
+            Documentário
+        </button>
+
+        <button class="genre-filter" data-genre="Drama">
+            Drama
+        </button>
+
+        <button class="genre-filter" data-genre="Fantasia">
+            Fantasia
+        </button>
+
+        <button class="genre-filter" data-genre="Ficção científica">
+            Ficção científica
+        </button>
+
+        <button class="genre-filter" data-genre="Guerra">
+            Guerra
+        </button>
+
+        <button class="genre-filter" data-genre="História">
+            História
+        </button>
+
+        <button class="genre-filter" data-genre="Mistério">
+            Mistério
+        </button>
+
+        <button class="genre-filter" data-genre="Musical">
+            Musical
+        </button>
+
+        <button class="genre-filter" data-genre="Romance">
+            Romance
+        </button>
+
+        <button class="genre-filter" data-genre="Suspense">
+            Suspense
+        </button>
+
+        <button class="genre-filter" data-genre="Terror">
+            Terror
+        </button>
+    </div>
+</aside>
+
         <main id="mainContent">
             <!-- A biblioteca será criada pelo JavaScript -->
         </main>
@@ -189,6 +291,106 @@
         </small>
     </div>
 
+    <div class="movie-form-field comfort-movie-field">
+    <label class="comfort-movie-option">
+        <input
+            id="movieComfort"
+            type="checkbox"
+            name="filmeConforto"
+        >
+
+        <span class="comfort-movie-content">
+            <strong>Filmes de conforto</strong>
+
+            <small>
+                🔒 Sempre privado
+            </small>
+        </span>
+    </label>
+</div>
+
+<fieldset class="movie-form-field">
+    <legend>
+        Gêneros
+    </legend>
+
+    <div class="genre-selector">
+        <label>
+            <input type="checkbox" name="generos" value="Ação">
+            Ação
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="Animação">
+            Animação
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="Aventura">
+            Aventura
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="Comédia">
+            Comédia
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="Documentário">
+            Documentário
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="Drama">
+            Drama
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="Fantasia">
+            Fantasia
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="Ficção científica">
+            Ficção científica
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="Guerra">
+            Guerra
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="História">
+            História
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="Mistério">
+            Mistério
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="Musical">
+            Musical
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="Romance">
+            Romance
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="Suspense">
+            Suspense
+        </label>
+
+        <label>
+            <input type="checkbox" name="generos" value="Terror">
+            Terror
+        </label>
+    </div>
+</fieldset>
     <fieldset class="movie-form-field">
         <legend>
             Já assistiu?

@@ -451,8 +451,97 @@ function ativarInteracoes() {
         "click",
         tratarCliqueNoCard
     );
+    const botoesFiltro = document.querySelectorAll(
+    ".genre-filter"
+);
+
+botoesFiltro.forEach((botao) => {
+    botao.addEventListener("click", () => {
+        const filtroConforto =
+            botao.dataset.filterComfort === "true";
+
+        const genero =
+            botao.dataset.genre;
+
+        if (filtroConforto) {
+            const filmesConforto =
+                filmes.filter(
+                    (filme) =>
+                        filme.filmeConforto === true
+                );
+
+            renderizarBibliotecaFiltrada(
+                filmesConforto,
+                "Filmes de conforto"
+            );
+
+            return;
+        }
+
+        if (genero === "Todos") {
+            renderizarBiblioteca();
+            return;
+        }
+
+        if (genero) {
+            const filmesDoGenero =
+                filmes.filter(
+                    (filme) =>
+                        Array.isArray(filme.generos) &&
+                        filme.generos.includes(genero)
+                );
+
+            renderizarBibliotecaFiltrada(
+                filmesDoGenero,
+                genero
+            );
+        }
+    });
+});
 }
 
+function renderizarBibliotecaFiltrada(
+    lista,
+    titulo
+) {
+    const mainContent =
+        document.querySelector(
+            "#mainContent"
+        );
+
+    if (!mainContent) {
+        return;
+    }
+
+    mainContent.innerHTML = `
+        <section class="biblioteca">
+            <div class="biblioteca-cabecalho">
+                <div>
+                    <span class="biblioteca-legenda">
+                        EXPLORAR
+                    </span>
+
+                    <h2>${titulo}</h2>
+                </div>
+
+                <span class="biblioteca-total">
+                    ${lista.length}
+                    ${
+                        lista.length === 1
+                            ? "filme"
+                            : "filmes"
+                    }
+                </span>
+            </div>
+
+            <div class="lista-filmes">
+                ${lista
+                    .map(criarMovieCard)
+                    .join("")}
+            </div>
+        </section>
+    `;
+}
 function tratarCliqueNoCard(evento) {
     const botao = evento.target.closest(
         "[data-action]"
@@ -495,6 +584,19 @@ function tratarCliqueNoCard(evento) {
         return;
     }
     if (acao === "alternar-privacidade") {
+        if (filme.filmeConforto) {
+    filme.privacidade = "privado";
+
+    salvarEstadoLocal();
+    renderizarBiblioteca();
+
+    window.alert(
+        "Filmes de conforto são sempre privados."
+    );
+
+    return;
+}
+
     if (filme.privacidade === "publico") {
         filme.privacidade = "privado";
 
@@ -708,6 +810,27 @@ function configurarModalAdicionarFilme() {
             )
         );
 
+        const campoConforto =
+    formulario.querySelector(
+        'input[name="filmeConforto"]'
+    );
+
+if (campoConforto) {
+    campoConforto.checked =
+        filme.filmeConforto === true;
+}
+
+const camposGenero =
+    formulario.querySelectorAll(
+        'input[name="generos"]'
+    );
+
+camposGenero.forEach((campo) => {
+    campo.checked =
+        Array.isArray(filme.generos) &&
+        filme.generos.includes(campo.value);
+});
+
         const opcaoNota =
             formulario.querySelector(
                 `input[name="nota"][value="${nota}"]`
@@ -805,6 +928,14 @@ function configurarModalAdicionarFilme() {
             )
         );
 
+        const filmeConforto =
+    dadosFormulario.get("filmeConforto") !== null;
+
+const generosSelecionados =
+    dadosFormulario
+        .getAll("generos")
+        .filter(Boolean);
+
         const arquivoPoster =
             campoPoster.files?.[0];
 
@@ -834,90 +965,113 @@ function configurarModalAdicionarFilme() {
                 Ao editar, se nenhuma imagem nova for
                 escolhida, conservamos o pôster atual.
             */
-            if (arquivoPoster) {
-                poster =
-                    await processarPoster(
-                        arquivoPoster
-                    );
-            } else if (filmeExistente) {
-                poster =
-                    filmeExistente.poster;
-            } else {
-                poster =
-                    criarPosterPadrao(titulo);
+         
+                if (arquivoPoster) {
+    poster =
+        await processarPoster(
+            arquivoPoster
+        );
+
+} else if (filmeExistente) {
+    poster =
+        filmeExistente.poster;
+
+} else {
+    poster =
+        criarPosterPadrao(
+            titulo
+        );
+}
+
+ if (filmeExistente) {
+    /*
+        Atualiza o filme existente.
+    */
+
+    filmeExistente.titulo = titulo;
+
+    filmeExistente.ano =
+        anoDigitado || "—";
+
+    filmeExistente.poster =
+        poster;
+
+    filmeExistente.assistido =
+        assistido;
+
+ filmeExistente.vezesAssistido =
+    vezesAssistido;
+
+filmeExistente.nota =
+    nota;
+
+filmeExistente.generos =
+    generosSelecionados.length > 0
+        ? generosSelecionados
+        : ["Coleção pessoal"];
+
+filmeExistente.filmeConforto =
+    filmeConforto;
+
+if (filmeConforto) {
+    filmeExistente.privacidade =
+        "privado";
+}
+
+} else {
+    const novoFilme = {
+        id: criarIdUnico(),
+
+        titulo,
+
+        ano:
+            anoDigitado || "—",
+
+        generos:
+            generosSelecionados.length > 0
+                ? generosSelecionados
+                : ["Coleção pessoal"],
+
+        poster,
+
+        assistido,
+
+        favorito: false,
+
+        vezesAssistido,
+
+        nota,
+
+        filmeConforto,
+
+        privacidade:
+            "privado",
+
+        criadoPeloUsuario:
+            true
+    };
+
+    filmes.unshift(novoFilme);
+}
+
+salvarEstadoLocal();
+renderizarBiblioteca();
+
+formulario.reset();
+campoId.value = "";
+
+fecharModal();
+
+mostrarConfirmacaoNoBotao
+(
+    botaoAbrir,
+    conteudoOriginalBotao,
+    Boolean(filmeExistente)
+);
             }
 
-            if (filmeExistente) {
-                /*
-                    ALTERAÇÃO — atualiza o objeto existente,
-                    sem criar um filme duplicado.
-                */
-                filmeExistente.titulo =
-                    titulo;
 
-                filmeExistente.ano =
-                    anoDigitado || "—";
-
-                filmeExistente.poster =
-                    poster;
-
-                filmeExistente.assistido =
-                    assistido;
-
-                filmeExistente.vezesAssistido =
-                    vezesAssistido;
-
-                filmeExistente.nota =
-                    nota;
-            } else {
-                const novoFilme = {
-                    id: criarIdUnico(),
-
-                    titulo,
-
-                    ano:
-                        anoDigitado || "—",
-
-                    generos: [
-                        "Coleção pessoal"
-                    ],
-
-                    poster,
-
-                    assistido,
-
-                    favorito: false,
-
-                    vezesAssistido,
-
-                    nota,
-
-                    filmeConforto: false,
-
-                    privacidade:
-                        "privado",
-
-                    criadoPeloUsuario:
-                        true
-                };
-
-                filmes.unshift(novoFilme);
-            }
-
-            salvarEstadoLocal();
-            renderizarBiblioteca();
-
-            formulario.reset();
-            campoId.value = "";
-
-            fecharModal();
-
-            mostrarConfirmacaoNoBotao(
-                botaoAbrir,
-                conteudoOriginalBotao,
-                Boolean(filmeExistente)
-            );
-        } catch (erro) {
+         catch (erro) {
             console.error(
                 "Não foi possível salvar o filme:",
                 erro
