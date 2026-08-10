@@ -22,6 +22,7 @@ async function iniciarAplicativo() {
         filmes = carregarEstadoLocal(filmesDoJson);
 
         renderizarBiblioteca();
+        atualizarContadoresGeneros();
         ativarInteracoes();
         configurarModalAdicionarFilme();
         configurarModalPrivacidade();
@@ -206,14 +207,141 @@ function salvarEstadoLocal() {
     }
 }
 
+function criarMovieCard(filme) {
+    const generos =
+        Array.isArray(filme.generos) &&
+        filme.generos.length > 0
+            ? filme.generos
+                .slice(0, 3)
+                .join(" • ")
+            : "Coleção pessoal";
+
+    const nota =
+        Math.max(
+            0,
+            Math.min(
+                Number(filme.nota) || 0,
+                3
+            )
+        );
+
+    const estrelas =
+        "★".repeat(nota) +
+        "☆".repeat(3 - nota);
+
+    const assistido =
+        filme.assistido === true;
+
+    const favorito =
+        filme.favorito === true;
+
+    const privacidade =
+        filme.privacidade === "publico"
+            ? "🔓"
+            : "🔒";
+
+    return `
+        <article
+            class="movie-card"
+            data-id="${filme.id}"
+        >
+            <div class="movie-card-poster">
+
+                <img
+                    src="${filme.poster}"
+                    alt="Pôster de ${filme.titulo}"
+                    loading="lazy"
+                >
+
+                <button
+                    type="button"
+                    class="contador-visualizacoes"
+                    data-action="incrementar-visualizacoes"
+                    aria-label="Adicionar visualização"
+                >
+                    ◉ ${filme.vezesAssistido || 0}
+                </button>
+
+                <button
+                    type="button"
+                    class="botao-assistido ${
+                        assistido
+                            ? "ativo"
+                            : ""
+                    }"
+                    data-action="alternar-assistido"
+                    aria-label="Alternar assistido"
+                >
+                </button>
+
+                <button
+                    type="button"
+                    class="botao-privacidade"
+                    data-action="alternar-privacidade"
+                    aria-label="Alternar privacidade"
+                >
+                    ${privacidade}
+                </button>
+
+                <button
+                    type="button"
+                    class="movie-card-edit"
+                    data-action="editar-filme"
+                    aria-label="Editar filme"
+                >
+                    ⋯
+                </button>
+
+                <div class="movie-card-info">
+                    <span class="movie-card-year">
+                        ${filme.ano || "—"}
+                    </span>
+
+                    <h3>
+                        ${filme.titulo}
+                    </h3>
+
+                    <p class="movie-card-genres">
+                        ${generos}
+                    </p>
+
+                    <div class="movie-card-footer">
+                        <span class="movie-card-rating">
+                            ${estrelas}
+                        </span>
+
+                        <button
+                            type="button"
+                            class="botao-favorito ${
+                                favorito
+                                    ? "ativo"
+                                    : ""
+                            }"
+                            data-action="alternar-favorito"
+                            aria-label="Alternar favorito"
+                        >
+                            ${
+                                favorito
+                                    ? "♥"
+                                    : "♡"
+                            }
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </article>
+    `;
+}
 /* ========================================
    BIBLIOTECA
 ======================================== */
 
 function renderizarBiblioteca() {
-    const mainContent = document.querySelector(
-        "#mainContent"
-    );
+    const mainContent =
+        document.querySelector(
+            "#mainContent"
+        );
 
     if (!mainContent) {
         console.error(
@@ -253,252 +381,10 @@ function renderizarBiblioteca() {
     `;
 }
 
-/* ========================================
-   MOVIE CARD
-======================================== */
-
-function criarMovieCard(filme) {
-    const generos = filme.generos
-        .slice(0, 3)
-        .join(" • ");
-
-    const classeAssistido = filme.assistido
-        ? "ativo"
-        : "";
-
-    const classeFavorito = filme.favorito
-        ? "ativo"
-        : "";
-
-    const filmePublico =
-        filme.privacidade === "publico";
-
-    const classePrivacidade = filmePublico
-        ? "publico"
-        : "privado";
-
-    const simboloPrivacidade = filmePublico
-        ? "🔓"
-        : "🔒";
-
-    const textoPrivacidade = filmePublico
-        ? "Filme público"
-        : "Filme privado";
-
-    const ariaPrivacidade = filmePublico
-        ? `Tornar ${filme.titulo} privado`
-        : `Tornar ${filme.titulo} público`;
-
-    const textoAssistido = filme.assistido
-        ? "Assistido"
-        : "Não assistido";
-
-    const ariaAssistido = filme.assistido
-        ? `Marcar ${filme.titulo} como não assistido`
-        : `Marcar ${filme.titulo} como assistido`;
-
-    const ariaFavorito = filme.favorito
-        ? `Remover ${filme.titulo} dos favoritos`
-        : `Adicionar ${filme.titulo} aos favoritos`;
-
-    const simboloFavorito = filme.favorito
-        ? "♥"
-        : "♡";
-
-    return `
-        <article
-            class="movie-card"
-            data-id="${filme.id}"
-        >
-            <div class="movie-card-poster">
-                <img
-                    src="${filme.poster}"
-                    alt="Pôster do filme ${filme.titulo}"
-                    loading="lazy"
-                >
-
-                <div class="movie-card-topo">
-                    <button
-                        class="contador-visualizacoes"
-                        type="button"
-                        data-action="adicionar-visualizacao"
-                        aria-label="Adicionar uma visualização a ${filme.titulo}"
-                        title="Clique quando assistir novamente"
-                    >
-                        <span
-                            class="icone-olho"
-                            aria-hidden="true"
-                        >
-                            ◉
-                        </span>
-
-                        <span>
-                            ${filme.vezesAssistido}
-                        </span>
-                    </button>
-
-                    <div class="movie-card-controles-direita">
-                        <button
-                            class="botao-assistido ${classeAssistido}"
-                            type="button"
-                            data-action="alternar-assistido"
-                            aria-pressed="${filme.assistido}"
-                            aria-label="${ariaAssistido}"
-                            title="${textoAssistido}"
-                        ></button>
-
-                        <button
-                            class="botao-privacidade ${classePrivacidade}"
-                            type="button"
-                            data-action="alternar-privacidade"
-                            aria-pressed="${filmePublico}"
-                            aria-label="${ariaPrivacidade}"
-                            title="${textoPrivacidade}"
-                        >
-                            <span aria-hidden="true">
-                                ${simboloPrivacidade}
-                            </span>
-                        </button>
-                    </div>
-                </div>
-
-                <button
-                    class="botao-editar-filme"
-                    type="button"
-                    data-action="editar-filme"
-                    aria-label="Editar ${filme.titulo}"
-                    title="Editar filme"
-                >
-                    ⋯
-                </button>
-
-                <div class="movie-card-degrade"></div>
-
-                <div class="movie-card-informacoes">
-                    <span class="movie-card-ano">
-                        ${filme.ano}
-                    </span>
-
-                    <h3>${filme.titulo}</h3>
-
-                    <p>${generos}</p>
-
-                    <div class="movie-card-rodape">
-                        <div
-                            class="movie-card-nota"
-                            aria-label="Classificação ${filme.nota} de 3"
-                        >
-                            ${criarEstrelas(filme.nota)}
-                        </div>
-
-                        <button
-                            class="botao-favorito ${classeFavorito}"
-                            type="button"
-                            data-action="alternar-favorito"
-                            aria-pressed="${filme.favorito}"
-                            aria-label="${ariaFavorito}"
-                            title="Favorito"
-                        >
-                            ${simboloFavorito}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </article>
-    `;
-}
-
-function criarEstrelas(nota) {
-    const notaLimitada = Math.max(
-        0,
-        Math.min(Number(nota) || 0, 3)
-    );
-
-    let estrelas = "";
-
-    for (
-        let numero = 1;
-        numero <= 3;
-        numero += 1
-    ) {
-        estrelas +=
-            numero <= notaLimitada
-                ? "★"
-                : "☆";
-    }
-
-    return estrelas;
-}
 
 /* ========================================
-   INTERAÇÕES DOS CARDS
+   BIBLIOTECA FILTRADA
 ======================================== */
-
-function ativarInteracoes() {
-    const mainContent = document.querySelector(
-        "#mainContent"
-    );
-
-    if (!mainContent) {
-        return;
-    }
-
-    /*
-        O evento fica no mainContent. Assim os cards
-        podem ser recriados sem perder os cliques.
-    */
-    mainContent.addEventListener(
-        "click",
-        tratarCliqueNoCard
-    );
-    const botoesFiltro = document.querySelectorAll(
-    ".genre-filter"
-);
-
-botoesFiltro.forEach((botao) => {
-    botao.addEventListener("click", () => {
-        const filtroConforto =
-            botao.dataset.filterComfort === "true";
-
-        const genero =
-            botao.dataset.genre;
-
-        if (filtroConforto) {
-            const filmesConforto =
-                filmes.filter(
-                    (filme) =>
-                        filme.filmeConforto === true
-                );
-
-            renderizarBibliotecaFiltrada(
-                filmesConforto,
-                "Filmes de conforto"
-            );
-
-            return;
-        }
-
-        if (genero === "Todos") {
-            renderizarBiblioteca();
-            return;
-        }
-
-        if (genero) {
-            const filmesDoGenero =
-                filmes.filter(
-                    (filme) =>
-                        Array.isArray(filme.generos) &&
-                        filme.generos.includes(genero)
-                );
-
-            renderizarBibliotecaFiltrada(
-                filmesDoGenero,
-                genero
-            );
-        }
-    });
-});
-}
 
 function renderizarBibliotecaFiltrada(
     lista,
@@ -542,63 +428,302 @@ function renderizarBibliotecaFiltrada(
         </section>
     `;
 }
-function tratarCliqueNoCard(evento) {
-    const botao = evento.target.closest(
-        "[data-action]"
+
+
+/* ========================================
+   CONTADORES DOS GÊNEROS
+======================================== */
+
+function atualizarContadoresGeneros() {
+    const botoesGenero =
+        document.querySelectorAll(
+            ".genre-filter[data-genre]"
+        );
+
+    botoesGenero.forEach((botao) => {
+        const genero =
+            botao.dataset.genre;
+
+        const contador =
+            botao.querySelector(
+                ".genre-count"
+            );
+
+        if (!contador) {
+            return;
+        }
+
+        let quantidade = 0;
+
+        if (genero === "Todos") {
+            quantidade =
+                filmes.length;
+        } else {
+            quantidade =
+                filmes.filter(
+                    (filme) =>
+                        Array.isArray(
+                            filme.generos
+                        ) &&
+                        filme.generos.includes(
+                            genero
+                        )
+                ).length;
+        }
+
+        contador.textContent =
+            quantidade;
+    });
+}
+
+
+/* ========================================
+   INTERAÇÕES
+======================================== */
+
+function ativarInteracoes() {
+    const mainContent =
+        document.querySelector(
+            "#mainContent"
+        );
+
+    if (!mainContent) {
+        return;
+    }
+
+    /*
+        Clique dos cards.
+        Como usamos delegação de eventos,
+        os cards continuam funcionando
+        mesmo após nova renderização.
+    */
+    mainContent.addEventListener(
+        "click",
+        tratarCliqueNoCard
     );
+
+
+    /* ========================================
+       FILTROS DE GÊNEROS
+    ======================================== */
+
+    const botoesFiltro =
+        document.querySelectorAll(
+            ".genre-filter"
+        );
+
+    botoesFiltro.forEach((botao) => {
+        botao.addEventListener(
+            "click",
+            () => {
+                const filtroConforto =
+                    botao.dataset
+                        .filterComfort ===
+                    "true";
+
+                const genero =
+                    botao.dataset.genre;
+
+                if (filtroConforto) {
+                    const filmesConforto =
+                        filmes.filter(
+                            (filme) =>
+                                filme
+                                    .filmeConforto ===
+                                true
+                        );
+
+                    renderizarBibliotecaFiltrada(
+                        filmesConforto,
+                        "Filmes de conforto"
+                    );
+
+                    return;
+                }
+
+                if (genero === "Todos") {
+                    renderizarBiblioteca();
+
+                    return;
+                }
+
+                if (genero) {
+                    const filmesDoGenero =
+                        filmes.filter(
+                            (filme) =>
+                                Array.isArray(
+                                    filme.generos
+                                ) &&
+                                filme.generos.includes(
+                                    genero
+                                )
+                        );
+
+                    renderizarBibliotecaFiltrada(
+                        filmesDoGenero,
+                        genero
+                    );
+                }
+            }
+        );
+    });
+
+
+    /* ========================================
+       ABRIR / FECHAR PAINEL GÊNEROS
+    ======================================== */
+
+    const botaoExplorar =
+        document.querySelector(
+            "#openGenresButton"
+        );
+
+    const painelExplorar =
+        document.querySelector(
+            "#genresDrawer"
+        );
+
+    const botaoFecharExplorar =
+        document.querySelector(
+            "#closeGenresButton"
+        );
+
+    if (
+        botaoExplorar &&
+        painelExplorar &&
+        botaoFecharExplorar
+    ) {
+        botaoExplorar.addEventListener(
+            "click",
+            () => {
+                const estaAberto =
+                    painelExplorar
+                        .classList
+                        .toggle(
+                            "is-open"
+                        );
+
+                painelExplorar.setAttribute(
+                    "aria-hidden",
+                    String(!estaAberto)
+                );
+
+                botaoExplorar.setAttribute(
+                    "aria-expanded",
+                    String(estaAberto)
+                );
+            }
+        );
+
+        botaoFecharExplorar.addEventListener(
+            "click",
+            () => {
+                painelExplorar
+                    .classList
+                    .remove(
+                        "is-open"
+                    );
+
+                painelExplorar.setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+
+                botaoExplorar.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+            }
+        );
+    }
+}
+
+
+/* ========================================
+   CLIQUES NOS CARDS
+======================================== */
+
+function tratarCliqueNoCard(evento) {
+    const botao =
+        evento.target.closest(
+            "[data-action]"
+        );
 
     if (!botao) {
         return;
     }
 
-    const card = botao.closest(".movie-card");
+    const card =
+        botao.closest(
+            ".movie-card"
+        );
 
     if (!card) {
         return;
     }
 
-    const filmeId = String(card.dataset.id);
+    const filmeId =
+        String(
+            card.dataset.id
+        );
 
-    const filme = filmes.find(
-        (item) =>
-            String(item.id) === filmeId
-    );
+    const filme =
+        filmes.find(
+            (item) =>
+                String(item.id) ===
+                filmeId
+        );
 
     if (!filme) {
         return;
     }
 
-    const acao = botao.dataset.action;
+    const acao =
+        botao.dataset.action;
 
-    /*
-        ALTERAÇÃO — abre o modal no modo edição.
-    */
-    if (acao === "editar-filme") {
+
+    /* EDITAR FILME */
+
+    if (
+        acao ===
+        "editar-filme"
+    ) {
         if (
             typeof abrirEditorDeFilme ===
             "function"
         ) {
-            abrirEditorDeFilme(filme);
+            abrirEditorDeFilme(
+                filme
+            );
         }
 
         return;
     }
-    if (acao === "alternar-privacidade") {
-        if (filme.filmeConforto) {
-    filme.privacidade = "privado";
 
-    salvarEstadoLocal();
-    renderizarBiblioteca();
 
-    window.alert(
-        "Filmes de conforto são sempre privados."
-    );
+    /* PRIVACIDADE */
 
-    return;
-}
+    if (
+        acao ===
+        "alternar-privacidade"
+    ) {
+        if (
+            filme.filmeConforto
+        ) {
+            filme.privacidade =
+                "privado";
 
-    if (filme.privacidade === "publico") {
-        filme.privacidade = "privado";
+            salvarEstadoLocal();
+            renderizarBiblioteca();
+
+            return;
+        }
+
+        filme.privacidade =
+            filme.privacidade ===
+            "privado"
+                ? "publico"
+                : "privado";
 
         salvarEstadoLocal();
         renderizarBiblioteca();
@@ -606,27 +731,29 @@ function tratarCliqueNoCard(evento) {
         return;
     }
 
-    filmeAguardandoPublicacao = filme;
 
-    document.dispatchEvent(
-        new CustomEvent(
-            "soma:confirmar-publicacao",
-            {
-                detail: {
-                    filme
-                }
-            }
-        )
-    );
+    /* FAVORITO */
 
-    return;
-}
+    if (
+        acao ===
+        "alternar-favorito"
+    ) {
+        filme.favorito =
+            !filme.favorito;
 
-    if (acao === "alternar-favorito") {
-        filme.favorito = !filme.favorito;
+        salvarEstadoLocal();
+        renderizarBiblioteca();
+
+        return;
     }
 
-    if (acao === "alternar-assistido") {
+
+    /* ASSISTIDO */
+
+    if (
+        acao ===
+        "alternar-assistido"
+    ) {
         filme.assistido =
             !filme.assistido;
 
@@ -634,22 +761,40 @@ function tratarCliqueNoCard(evento) {
             filme.assistido &&
             filme.vezesAssistido === 0
         ) {
-            filme.vezesAssistido = 1;
+            filme.vezesAssistido =
+                1;
         }
+
+        salvarEstadoLocal();
+        renderizarBiblioteca();
+
+        return;
     }
+
+
+    /* CONTADOR DE VISUALIZAÇÕES */
 
     if (
         acao ===
-        "adicionar-visualizacao"
+        "incrementar-visualizacoes"
     ) {
-        filme.vezesAssistido += 1;
-        filme.assistido = true;
+        filme.vezesAssistido =
+            Math.max(
+                0,
+                Number(
+                    filme.vezesAssistido
+                ) || 0
+            ) + 1;
+
+        filme.assistido =
+            true;
+
+        salvarEstadoLocal();
+        renderizarBiblioteca();
+
+        return;
     }
-
-    salvarEstadoLocal();
-    renderizarBiblioteca();
 }
-
 /* ========================================
    MODAL — ADICIONAR E EDITAR FILME
 ======================================== */

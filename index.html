@@ -2,6 +2,18 @@
 <html lang="pt-BR">
 
 <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+>
     <meta charset="UTF-8">
 
     <meta
@@ -87,7 +99,7 @@
     aria-controls="genresDrawer"
     aria-expanded="false"
 >
-    ☰ Gêneros
+    ☰ GÊNEROS
 </button>
 
 <aside
@@ -96,12 +108,12 @@
     aria-hidden="true"
 >
     <div class="genres-drawer-header">
-        <h2>Explorar</h2>
+        <h2>Gêneros</h2>
 
         <button
             id="closeGenresButton"
             type="button"
-            aria-label="Fechar gêneros"
+            aria-label="Fechar generos"
         >
             ×
         </button>
@@ -115,78 +127,97 @@
         🔒 Filmes de conforto
     </button>
 
-    <div class="genres-list">
-        <button class="genre-filter" data-genre="Todos">
-            Todos
-        </button>
+   <div class="genres-list">
 
-        <button class="genre-filter" data-genre="Ação">
-            Ação
-        </button>
+    <button class="genre-filter" data-genre="Todos">
+        <span>Todos</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="Animação">
-            Animação
-        </button>
+    <button class="genre-filter" data-genre="Ação">
+        <span>Ação</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="Aventura">
-            Aventura
-        </button>
+    <button class="genre-filter" data-genre="Animação">
+        <span>Animação</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="Comédia">
-            Comédia
-        </button>
+    <button class="genre-filter" data-genre="Aventura">
+        <span>Aventura</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="Documentário">
-            Documentário
-        </button>
+    <button class="genre-filter" data-genre="Comédia">
+        <span>Comédia</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="Drama">
-            Drama
-        </button>
+    <button class="genre-filter" data-genre="Documentário">
+        <span>Documentário</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="Fantasia">
-            Fantasia
-        </button>
+    <button class="genre-filter" data-genre="Drama">
+        <span>Drama</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="Ficção científica">
-            Ficção científica
-        </button>
+    <button class="genre-filter" data-genre="Fantasia">
+        <span>Fantasia</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="Guerra">
-            Guerra
-        </button>
+    <button class="genre-filter" data-genre="Ficção científica">
+        <span>Ficção científica</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="História">
-            História
-        </button>
+    <button class="genre-filter" data-genre="Guerra">
+        <span>Guerra</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="Mistério">
-            Mistério
-        </button>
+    <button class="genre-filter" data-genre="História">
+        <span>História</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="Musical">
-            Musical
-        </button>
+    <button class="genre-filter" data-genre="Mistério">
+        <span>Mistério</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="Romance">
-            Romance
-        </button>
+    <button class="genre-filter" data-genre="Musical">
+        <span>Musical</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="Suspense">
-            Suspense
-        </button>
+    <button class="genre-filter" data-genre="Romance">
+        <span>Romance</span>
+        <span class="genre-count">0</span>
+    </button>
 
-        <button class="genre-filter" data-genre="Terror">
-            Terror
-        </button>
-    </div>
+    <button class="genre-filter" data-genre="Suspense">
+        <span>Suspense</span>
+        <span class="genre-count">0</span>
+    </button>
+
+    <button class="genre-filter" data-genre="Terror">
+        <span>Terror</span>
+        <span class="genre-count">0</span>
+    </button>
+
+</div>
+
 </aside>
 
-        <main id="mainContent">
-            <!-- A biblioteca será criada pelo JavaScript -->
-        </main>
+<main id="mainContent">
+    <!-- A biblioteca será criada pelo JavaScript -->
+</main>
 
-    </div>
+</div>
 
     <button
         id="openAddMovieButton"
