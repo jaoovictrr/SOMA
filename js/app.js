@@ -41,6 +41,26 @@ async function iniciarAplicativo() {
     */
 }
 
+function removerFilme(id) {
+    const confirmou = window.confirm(
+        "Tem certeza que deseja remover este filme da sua biblioteca?"
+    );
+
+    if (!confirmou) {
+        return;
+    }
+
+    filmes = filmes.filter(
+        (filme) =>
+            String(filme.id) !== String(id)
+    );
+
+    salvarEstadoLocal();
+
+    renderizarBiblioteca();
+    atualizarContadoresGeneros();
+}
+
 async function carregarFilmesDoJson() {
     const resposta = await fetch(CAMINHO_DADOS);
 
@@ -206,7 +226,6 @@ function salvarEstadoLocal() {
         );
     }
 }
-
 function criarMovieCard(filme) {
     const generos =
         Array.isArray(filme.generos) &&
@@ -235,10 +254,14 @@ function criarMovieCard(filme) {
     const favorito =
         filme.favorito === true;
 
-    const privacidade =
-        filme.privacidade === "publico"
-            ? "🔓"
-            : "🔒";
+    const publico =
+        filme.privacidade === "publico";
+
+    const visualizacoes =
+        Math.max(
+            0,
+            Number(filme.vezesAssistido) || 0
+        );
 
     return `
         <article
@@ -253,47 +276,61 @@ function criarMovieCard(filme) {
                     loading="lazy"
                 >
 
-                <button
-                    type="button"
-                    class="contador-visualizacoes"
-                    data-action="incrementar-visualizacoes"
-                    aria-label="Adicionar visualização"
-                >
-                    ◉ ${filme.vezesAssistido || 0}
-                </button>
+                <div class="movie-card-topo">
 
-                <button
-                    type="button"
-                    class="botao-assistido ${
-                        assistido
-                            ? "ativo"
-                            : ""
-                    }"
-                    data-action="alternar-assistido"
-                    aria-label="Alternar assistido"
-                >
-                </button>
+                    <button
+                        type="button"
+                        class="contador-visualizacoes"
+                        data-action="incrementar-visualizacoes"
+                        aria-label="Adicionar visualização"
+                    >
+                        ◉ ${visualizacoes}
+                    </button>
 
-                <button
-                    type="button"
-                    class="botao-privacidade"
-                    data-action="alternar-privacidade"
-                    aria-label="Alternar privacidade"
-                >
-                    ${privacidade}
-                </button>
+                    <div class="movie-card-controles-direita">
 
-                <button
-                    type="button"
-                    class="movie-card-edit"
-                    data-action="editar-filme"
-                    aria-label="Editar filme"
-                >
-                    ⋯
-                </button>
+                        <button
+                            type="button"
+                            class="botao-assistido ${
+                                assistido
+                                    ? "ativo"
+                                    : ""
+                            }"
+                            data-action="alternar-assistido"
+                            aria-label="Alternar assistido"
+                        ></button>
 
-                <div class="movie-card-info">
-                    <span class="movie-card-year">
+                        <button
+                            type="button"
+                            class="botao-privacidade ${
+                                publico
+                                    ? "publico"
+                                    : "privado"
+                            }"
+                            data-action="alternar-privacidade"
+                            aria-label="Alternar privacidade"
+                        >
+                            ${
+                                publico
+                                    ? "🔓"
+                                    : "🔒"
+                            }
+                        </button>
+<button
+    type="button"
+    class="movie-card-edit"
+    data-action="editar-filme"
+    aria-label="Editar filme"
+>
+    ⋯
+</button>
+                    </div>
+
+                </div>
+
+                <div class="movie-card-informacoes">
+
+                    <span class="movie-card-ano">
                         ${filme.ano || "—"}
                     </span>
 
@@ -301,12 +338,13 @@ function criarMovieCard(filme) {
                         ${filme.titulo}
                     </h3>
 
-                    <p class="movie-card-genres">
+                    <p>
                         ${generos}
                     </p>
 
-                    <div class="movie-card-footer">
-                        <span class="movie-card-rating">
+                    <div class="movie-card-rodape">
+
+                        <span class="movie-card-nota">
                             ${estrelas}
                         </span>
 
@@ -318,7 +356,11 @@ function criarMovieCard(filme) {
                                     : ""
                             }"
                             data-action="alternar-favorito"
-                            aria-label="Alternar favorito"
+                            aria-label="${
+                                favorito
+                                    ? "Remover dos favoritos"
+                                    : "Adicionar aos favoritos"
+                            }"
                         >
                             ${
                                 favorito
@@ -326,7 +368,9 @@ function criarMovieCard(filme) {
                                     : "♡"
                             }
                         </button>
+
                     </div>
+
                 </div>
 
             </div>
@@ -700,6 +744,28 @@ function tratarCliqueNoCard(evento) {
         return;
     }
 
+/* REMOVER FILME */
+
+if (acao === "remover-filme") {
+
+    const confirmar = confirm(
+        `Remover "${filme.titulo}" da sua biblioteca?`
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    filmes = filmes.filter(
+        item => item.id !== filme.id
+    );
+
+    salvarEstadoLocal();
+
+    renderizarBiblioteca();
+
+    return;
+}
 
     /* PRIVACIDADE */
 
@@ -812,6 +878,7 @@ function configurarModalAdicionarFilme() {
         "#addMovieForm"
     );
 
+
     const campoId = document.querySelector(
         "#movieId"
     );
@@ -845,6 +912,10 @@ function configurarModalAdicionarFilme() {
         "#saveMovieButton"
     );
 
+const botaoRemover = document.querySelector(
+    "#deleteMovieButton"
+);
+
     const botoesFechar =
         document.querySelectorAll(
             "[data-close-modal]"
@@ -866,6 +937,7 @@ function configurarModalAdicionarFilme() {
         console.error(
             "Não foi possível configurar o formulário de filmes."
         );
+       
 
         return;
     }
@@ -908,6 +980,8 @@ function configurarModalAdicionarFilme() {
 
         botaoSalvar.textContent =
             "Salvar filme";
+
+            botaoRemover.style.display = "none";
 
         restaurarOpcoesPadrao(
             formulario
@@ -994,6 +1068,8 @@ camposGenero.forEach((campo) => {
         botaoSalvar.textContent =
             "Salvar alterações";
 
+            botaoRemover.style.display = "inline-flex";
+
         mostrarModal();
     }
 
@@ -1009,9 +1085,35 @@ camposGenero.forEach((campo) => {
             "modal-open"
         );
 
+        botaoRemover.style.display = "none";
         botaoAbrir.focus();
     }
+botaoRemover.addEventListener(
+    "click",
+    () => {
 
+        const id = campoId.value;
+
+        if (!id) return;
+
+        const confirmar = confirm(
+            "Remover este filme da biblioteca?"
+        );
+
+        if (!confirmar) return;
+
+        filmes = filmes.filter(
+            filme =>
+                String(filme.id) !== String(id)
+        );
+
+        salvarEstadoLocal();
+
+        renderizarBiblioteca();
+
+        fecharModal();
+    }
+);
     /*
         Essa função identifica se estamos criando
         ou editando por meio do campo movieId.
