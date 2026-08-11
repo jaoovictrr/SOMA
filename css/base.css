@@ -2106,6 +2106,15 @@ max-height:88vh;
     gap:16px;
 
 }
+.library-panel-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
 
 .library-panel-title-group h2{
 
@@ -2146,6 +2155,45 @@ max-height:88vh;
     cursor:pointer;
 
     transition:.25s;
+
+}
+.library-add-button{
+
+    padding:12px 20px;
+
+    border:none;
+
+    border-radius:999px;
+
+    background:linear-gradient(
+        135deg,
+        #ffbf5a,
+        #d89b35
+    );
+
+    color:#111;
+
+    font-weight:700;
+
+    font-size:.95rem;
+
+    cursor:pointer;
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+
+    box-shadow:
+        0 8px 24px rgba(255,184,82,.28);
+
+}
+
+.library-add-button:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 12px 30px rgba(255,184,82,.38);
 
 }
 

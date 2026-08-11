@@ -249,22 +249,19 @@ function criarMovieCard(filme) {
         "★".repeat(nota) +
         "☆".repeat(3 - nota);
 
-    const assistido =
-        filme.assistido === true;
+   const assistido =
+    filme.assistido === true;
 
-    const favorito =
-        filme.favorito === true;
+const favorito =
+    filme.favorito === true;
 
-    const publico =
-        filme.privacidade === "publico";
+const visualizacoes =
+    Number(filme.visualizacoes) || 0;
 
-    const visualizacoes =
-        Math.max(
-            0,
-            Number(filme.vezesAssistido) || 0
-        );
+const publico =
+    filme.privacidade === "publico";
 
-    return `
+return `
         <article
             class="movie-card"
             data-id="${filme.id}"
@@ -403,6 +400,14 @@ function criarLibraryCard(filme) {
     const favorito =
         filme.favorito === true;
 
+        const visualizacoes =
+    Number(filme.visualizacoes) || 0;
+
+const assistido =
+    filme.assistido === true;
+
+const publico =
+    filme.privacidade === "publico";
     return `
         <article
             class="library-card"
@@ -415,6 +420,59 @@ function criarLibraryCard(filme) {
                     alt="Pôster de ${filme.titulo}"
                     loading="lazy"
                 >
+<div class="movie-card-topo">
+
+    <button
+        type="button"
+        class="contador-visualizacoes"
+        data-action="incrementar-visualizacoes"
+        aria-label="Adicionar visualização"
+    >
+        ◉ ${visualizacoes}
+    </button>
+
+    <div class="movie-card-controles-direita">
+
+        <button
+            type="button"
+            class="botao-assistido ${
+                assistido
+                    ? "ativo"
+                    : ""
+            }"
+            data-action="alternar-assistido"
+            aria-label="Alternar assistido"
+        ></button>
+
+        <button
+            type="button"
+            class="botao-privacidade ${
+                publico
+                    ? "publico"
+                    : "privado"
+            }"
+            data-action="alternar-privacidade"
+            aria-label="Alternar privacidade"
+        >
+            ${
+                publico
+                    ? "🔓"
+                    : "🔒"
+            }
+        </button>
+
+        <button
+            type="button"
+            class="movie-card-edit"
+            data-action="editar-filme"
+            aria-label="Editar filme"
+        >
+            ⋯
+        </button>
+
+    </div>
+
+</div>
 
                 <div class="library-card-overlay">
 
@@ -505,12 +563,24 @@ function renderizarBiblioteca() {
 
                 </div>
 
-                <button
-                    type="button"
-                    class="library-sort-button"
-                >
-                    Mais recentes
-                </button>
+              <div class="library-panel-actions">
+
+    <button
+        type="button"
+        class="library-add-button"
+        id="openAddMovieButton"
+    >
+        Adicionar filme
+    </button>
+
+    <button
+        type="button"
+        class="library-sort-button"
+    >
+        Mais recentes
+    </button>
+
+</div>
 
             </div>
 
