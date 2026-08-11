@@ -926,12 +926,16 @@ body {
     min-height: 46px;
     padding: 0 18px;
 
+background: transparent;
+
+    color: #f2cf7a;
+
+    border: 1px solid rgba(232, 191, 104, 0.28);
     border-radius: 999px;
 
     font: inherit;
-    font-weight: 700;
-
-    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 .secondary-button {
@@ -942,15 +946,13 @@ body {
 }
 
 .primary-button {
-    border: 1px solid rgba(255, 214, 112, 0.55);
+    background: transparent;
 
-    color: #15110a;
-    background:
-        linear-gradient(
-            135deg,
-            #ffe08a,
-            #f5bd43
-        );
+    color: #f2cf7a;
+
+    border: 1px solid rgba(232, 191, 104, 0.28);
+
+    border-radius: 999px;
 }
 
 body.modal-open {
@@ -1021,6 +1023,26 @@ body.modal-open {
     .soma-signature {
         display: none;
     }
+}
+.primary-button:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #ffe89b,
+            #a47505
+        );
+
+    color: #31220a;
+
+    border-color: rgba(255, 214, 112, 0.72);
+
+    box-shadow:
+        0 0 20px rgba(255, 210, 90, 0.16);
+
+    transform: translateY(-3px);
+}
+.primary-button:active {
+    transform: scale(.97);
 }
 /* ========================================
    SELETOR DE 3 ESTRELAS
@@ -1197,39 +1219,61 @@ body.modal-open {
         box-shadow 180ms ease;
 }
 
-.danger-button{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
+.danger-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    padding:14px 26px;
+    width: auto;
+    min-width: 130px;
+    min-height: 44px;
 
-    background:transparent;
+    padding: 10px 20px;
 
-    color:#ffbcbc;
+    background: transparent;
 
-    border:1px solid rgba(255,120,120,.22);
+    color: #e8bf68;
 
-    border-radius:999px;
+    border: 1px solid rgba(145, 68, 52, 0.55);
+    border-radius: 999px;
 
-    font-size:.95rem;
-    font-weight:600;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
 
-    cursor:pointer;
+    cursor: pointer;
 
-    transition:.22s;
+    transition:
+        background 180ms ease,
+        color 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
 }
 
-.danger-button:hover{
+.danger-button:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #9a493a,
+            #682d26
+        );
 
-    background:rgba(255,80,80,.08);
+    color: #f7e8df;
 
-    border-color:rgba(255,110,110,.45);
+    border-color: rgba(184, 92, 72, 0.8);
 
-    color:white;
 
-    transform:translateY(-1px);
+    box-shadow:
+    0 0 16px rgba(151, 35, 11, 0.3),
+    0 0 34px rgba(168,78,60,.24),
+    0 0 36px rgba(168,78,60,.14);
+
+    transform: translateY(-4px);
+}
+
+.danger-button:active {
+    transform: scale(0.97);
 }
 
 .danger-button:active{
