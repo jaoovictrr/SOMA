@@ -307,19 +307,48 @@
 
     <div class="movie-form-field">
         <label for="moviePoster">
-            Pôster pessoal
-        </label>
+    Pôster pessoal
+</label>
 
-        <input
-            id="moviePoster"
-            name="poster"
-            type="file"
-            accept="image/*"
-        >
+<div
+    id="posterDropZone"
+    class="poster-drop-zone"
+    tabindex="0"
+>
+    <img
+        id="posterPreview"
+        class="poster-preview"
+        alt="Prévia do pôster"
+        hidden
+    >
 
-        <small class="movie-form-help">
-            Ao editar, deixe este campo vazio para manter o pôster atual.
+    <div
+        id="posterPlaceholder"
+        class="poster-placeholder"
+    >
+        <strong>Adicionar pôster</strong>
+
+        <span>
+            Clique, arraste ou cole uma imagem
+        </span>
+
+        <small>
+            Ctrl + V também funciona
         </small>
+    </div>
+
+    <input
+        id="moviePoster"
+        name="poster"
+        type="file"
+        accept="image/*"
+        hidden
+    >
+</div>
+
+<small class="movie-form-help">
+    Ao editar, deixe este campo vazio para manter o pôster atual.
+</small>
     </div>
 
     <div class="movie-form-field comfort-movie-field">

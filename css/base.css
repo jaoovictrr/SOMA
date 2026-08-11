@@ -363,13 +363,60 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
     gap: 22px;
 }
+.library-carousel{
+
+    display:flex;
+
+    gap:18px;
+
+    overflow-x:auto;
+
+    overflow-y:hidden;
+
+    padding-bottom:10px;
+
+    scroll-behavior:smooth;
+
+}
+.library-carousel::-webkit-scrollbar{
+
+    height:8px;
+
+}
+
+.library-carousel::-webkit-scrollbar-track{
+
+    background:transparent;
+
+}
+
+.library-carousel::-webkit-scrollbar-thumb{
+
+    background:rgba(255,184,82,.22);
+
+    border-radius:999px;
+
+}
 
 /* ========================================
    MOVIE CARD
 ======================================== */
 
+
 .movie-card {
+
     min-width: 0;
+
+}
+
+/* Biblioteca inferior */
+
+.library-carousel .movie-card{
+
+    width:220px;
+
+    flex:0 0 auto;
+
 }
 
 .movie-card-poster {
@@ -958,7 +1005,114 @@ background: transparent;
 body.modal-open {
     overflow: hidden;
 }
+.poster-drop-zone {
+    position: relative;
 
+    display: grid;
+    place-items: center;
+
+    min-height: 220px;
+
+    padding: 18px;
+
+    border: 1px dashed rgba(232, 191, 104, 0.32);
+    border-radius: 18px;
+
+    background: rgba(255, 255, 255, 0.025);
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    transition:
+        border-color 180ms ease,
+        background-color 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+}
+
+.poster-drop-zone:hover,
+.poster-drop-zone:focus {
+    border-color: rgba(232, 191, 104, 0.6);
+
+    background: rgba(232, 191, 104, 0.045);
+
+    box-shadow:
+        0 0 18px rgba(232, 191, 104, 0.07);
+
+    outline: none;
+}
+
+.poster-drop-zone.is-dragging {
+    border-color: rgba(232, 191, 104, 0.8);
+
+    background: rgba(232, 191, 104, 0.08);
+
+    transform: scale(1.01);
+}
+
+.poster-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 6px;
+
+    text-align: center;
+
+    color: #e8bf68;
+}
+
+.poster-placeholder span,
+.poster-placeholder small {
+    color: rgba(255, 255, 255, 0.62);
+}
+
+.poster-preview {
+    width: 160px;
+    aspect-ratio: 2 / 3;
+
+    object-fit: cover;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.3);
+}
+/* =====================================================
+   LIBRARY PANEL
+===================================================== */
+
+.library-panel {
+
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 44vh;
+
+    z-index: 900;
+
+    pointer-events: auto;
+
+}
+.library-panel.is-medium {
+    height: 58vh;
+}
+
+.library-panel.is-expanded {
+    height: 88vh;
+}
+
+.library-panel-content{
+
+    height:100%;
+
+    pointer-events:auto;
+
+}
 /* ========================================
    ASSINATURA DO SOMA
 ======================================== */
@@ -1012,8 +1166,19 @@ body.modal-open {
     }
 
     .movie-modal-actions {
-        flex-direction: column-reverse;
+        flex-direction: column;
     }
+    .primary-button {
+    order: 1;
+}
+
+.danger-button {
+    order: 2;
+}
+
+.secondary-button {
+    order: 3;
+}
 
     .secondary-button,
     .primary-button {
@@ -1518,6 +1683,12 @@ body.modal-open {
     right: 38px;
     left: auto;
 
+    transition:
+    right 320ms ease,
+    opacity 320ms ease;
+
+opacity: 0;
+
     width: 300px;
     max-height: calc(100vh - 245px);
 max-height: 680px;
@@ -1557,15 +1728,41 @@ max-height: 680px;
         inset 0 1px 0 rgba(255, 255, 255, 0.025);
 
     transform:
-        translateX(120%)
-        scale(0.97);
+    translateX(110%)
+    scale(0.98);
 
-    opacity: 0;
-    pointer-events: none;
+opacity: 0;
+pointer-events: none;
 
-    transition:
-        transform 0.38s cubic-bezier(.22, 1, .36, 1),
-        opacity 0.25s ease;
+transition:
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 500ms ease;
+
+        scrollbar-width: thin;
+
+scrollbar-color:
+    rgba(232, 191, 104, 0.28)
+    transparent;
+}
+.genres-drawer.is-open {
+    right: 38px;
+    opacity: 1;
+}
+.genres-drawer::-webkit-scrollbar {
+    width: 8px;
+}
+
+.genres-drawer::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.genres-drawer::-webkit-scrollbar-thumb {
+    background: rgba(232, 191, 104, 0.22);
+    border-radius: 999px;
+}
+
+.genres-drawer::-webkit-scrollbar-thumb:hover {
+    background: rgba(232, 191, 104, 0.38);
 }
 .genres-drawer::before {
     content: "";
@@ -1718,23 +1915,30 @@ max-height: 680px;
 
 
 .genre-filter:hover {
-    color:
-        rgba(255, 245, 229, 0.98);
+    color: #e8bf68;
 
     background:
-        linear-gradient(
-            90deg,
-            rgba(255, 156, 48, 0.07),
-            rgba(255, 156, 48, 0.015)
-        );
+        rgba(232, 191, 104, 0.035);
 
     border-color:
-        rgba(255, 174, 80, 0.10);
+        rgba(232, 191, 104, 0.16);
 
-    transform:
-        translateX(2px);
+    transform: translateX(2px);
 }
+.genre-filter.is-active {
+    color: #e8bf68;
 
+    background:
+        rgba(232, 191, 104, 0.06);
+
+    border:
+        1px solid rgba(232, 191, 104, 0.28);
+
+    box-shadow:
+        0 0 14px rgba(232, 191, 104, 0.06);
+
+    transform: translateX(2px);
+}
 
 /* FILMES DE CONFORTO */
 
@@ -1817,4 +2021,406 @@ max-height: 680px;
     text-shadow:
         0 0 10px rgba(255,180,70,.12),
         0 0 18px rgba(255,170,50,.08);
+}
+/* ==========================================================
+   LIBRARY PANEL
+========================================================== */
+
+.library-panel{
+
+    position:fixed;
+
+    left:28px;
+
+    right:28px;
+
+    bottom:18px;
+
+    height:58vh;
+
+min-height:340px;
+
+max-height:88vh;
+
+    z-index:900;
+
+    border-radius:34px 34px 0 0;
+
+    overflow:hidden;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(16,17,22,.96),
+            rgba(10,11,15,.94)
+        );
+
+    border:1px solid rgba(255,184,82,.22);
+
+    backdrop-filter:blur(26px);
+
+    -webkit-backdrop-filter:blur(26px);
+
+    box-shadow:
+        0 -10px 45px rgba(255,170,70,.10),
+        inset 0 1px 0 rgba(255,210,130,.08);
+
+        transition:
+    height .45s cubic-bezier(.22,1,.36,1),
+    transform .45s cubic-bezier(.22,1,.36,1);
+
+}
+
+.library-panel-content{
+
+    height:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    padding:18px 26px;
+
+}
+
+.library-panel-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:24px;
+
+    margin-bottom:22px;
+
+}
+
+.library-panel-title-group{
+
+    display:flex;
+
+    align-items:baseline;
+
+    gap:16px;
+
+}
+
+.library-panel-title-group h2{
+
+    margin:0;
+
+    font-size:46px;
+
+    font-weight:700;
+
+    letter-spacing:-1px;
+
+    color:#f7f4ee;
+
+}
+
+.library-panel-total{
+
+    color:#cfa35d;
+
+    font-size:18px;
+
+    font-weight:500;
+
+}
+
+.library-sort-button{
+
+    padding:12px 22px;
+
+    border-radius:999px;
+
+    border:1px solid rgba(255,184,82,.18);
+
+    background:rgba(255,255,255,.03);
+
+    color:#f2e3c5;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.library-sort-button:hover{
+
+    background:rgba(255,184,82,.10);
+
+    border-color:rgba(255,184,82,.35);
+
+}
+
+.library-panel-handle{
+
+    width:68px;
+
+    height:6px;
+
+    margin:14px auto 6px;
+
+    border-radius:999px;
+
+    background:linear-gradient(
+        90deg,
+        #ffb454,
+        #ffd777
+    );
+
+    opacity:.65;
+
+    cursor: pointer;
+pointer-events: auto;
+
+touch-action: none;
+user-select: none;
+}
+/* ==========================================================
+   LIBRARY CARD
+========================================================== */
+
+.library-card{
+
+    width:180px;
+
+    flex:0 0 auto;
+
+}
+
+.library-card-poster{
+
+    position:relative;
+
+    aspect-ratio:2/3;
+
+    overflow:hidden;
+
+    border-radius:20px;
+
+    background:#14151d;
+
+    border:1px solid rgba(255,184,82,.08);
+
+    transition:
+        transform .35s cubic-bezier(.22,1,.36,1),
+        box-shadow .35s,
+        border-color .35s;
+
+    cursor:pointer;
+
+}
+.library-card:hover .library-card-poster{
+
+    transform:
+        translateY(-8px)
+        scale(1.03);
+
+    border-color:rgba(255,190,90,.28);
+
+    box-shadow:
+
+        0 18px 42px rgba(0,0,0,.45),
+
+        0 0 30px rgba(255,185,80,.12);
+
+}
+
+.library-card-poster img{
+
+    width:100%;
+
+    height:100%;
+
+    display:block;
+
+    object-fit:cover;
+
+}
+
+.library-card-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:flex-end;
+
+    padding:16px;
+
+    background:
+
+        linear-gradient(
+
+            transparent 28%,
+
+            rgba(0,0,0,.20) 45%,
+
+            rgba(0,0,0,.88)
+
+        );
+
+}
+
+.library-card-title{
+
+    margin:0;
+
+    color:white;
+
+    font-size:24px;
+
+    font-weight:700;
+
+    line-height:1.05;
+
+    text-shadow:
+
+        0 2px 10px rgba(0,0,0,.65);
+
+}
+
+.library-card-genres{
+
+    margin:8px 0 12px;
+
+    color:#d8c6a4;
+
+    font-size:13px;
+
+    opacity:.9;
+
+}
+
+.library-card-year{
+
+    position:absolute;
+
+    top:14px;
+
+    left:14px;
+
+    padding:4px 10px;
+
+    border-radius:999px;
+
+    background:rgba(0,0,0,.45);
+
+    backdrop-filter:blur(10px);
+
+    color:white;
+
+    font-size:12px;
+
+}
+
+.library-card-footer{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.library-card-rating{
+
+    color:#ffc94d;
+
+}
+
+.library-card-favorite{
+
+    background:none;
+
+    border:none;
+
+    color:white;
+
+    font-size:22px;
+
+    cursor:pointer;
+
+}
+/* ==========================================================
+   LIBRARY FILTERS
+========================================================== */
+
+.library-panel-filters{
+
+    display:flex;
+
+    gap:12px;
+
+    margin-bottom:24px;
+
+    overflow-x:auto;
+
+    scrollbar-width:none;
+
+}
+
+.library-panel-filters::-webkit-scrollbar{
+
+    display:none;
+
+}
+
+.library-filter{
+
+    padding:10px 18px;
+
+    border-radius:999px;
+
+    border:1px solid rgba(255,184,82,.16);
+
+    background:rgba(255,255,255,.03);
+
+    color:#d7c7aa;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    white-space:nowrap;
+
+}
+.library-filter:hover{
+
+    transform:translateY(-2px);
+
+    border-color:rgba(255,184,82,.34);
+
+    background:rgba(255,184,82,.08);
+
+}
+.library-filter.is-active{
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffca63,
+            #d89b3a
+        );
+
+    color:#31220a;
+
+    border-color:transparent;
+
+    box-shadow:
+
+        0 0 24px rgba(255,185,70,.18);
+
 }

@@ -1,3 +1,4 @@
+import { configurarLibraryPanel } from "./libraryPanel.js";
 const CAMINHO_DADOS = "./data/movies.json";
 const CHAVE_STORAGE = "soma-filmes-v2";
 
@@ -377,6 +378,89 @@ function criarMovieCard(filme) {
         </article>
     `;
 }
+function criarLibraryCard(filme) {
+    const generos =
+        Array.isArray(filme.generos) &&
+        filme.generos.length > 0
+            ? filme.generos
+                .slice(0, 2)
+                .join(" • ")
+            : "Coleção pessoal";
+
+    const nota =
+        Math.max(
+            0,
+            Math.min(
+                Number(filme.nota) || 0,
+                3
+            )
+        );
+
+    const estrelas =
+        "★".repeat(nota) +
+        "☆".repeat(3 - nota);
+
+    const favorito =
+        filme.favorito === true;
+
+    return `
+        <article
+            class="library-card"
+            data-id="${filme.id}"
+        >
+            <div class="library-card-poster">
+
+                <img
+                    src="${filme.poster}"
+                    alt="Pôster de ${filme.titulo}"
+                    loading="lazy"
+                >
+
+                <div class="library-card-overlay">
+
+                    <span class="library-card-year">
+                        ${filme.ano || "—"}
+                    </span>
+
+                    <h3 class="library-card-title">
+                        ${filme.titulo}
+                    </h3>
+
+                    <p class="library-card-genres">
+                        ${generos}
+                    </p>
+
+                    <div class="library-card-footer">
+
+                        <span class="library-card-rating">
+                            ${estrelas}
+                        </span>
+
+                        <button
+                            type="button"
+                            class="library-card-favorite ${
+                                favorito
+                                    ? "ativo"
+                                    : ""
+                            }"
+                            data-action="alternar-favorito"
+                            aria-label="Alternar favorito"
+                        >
+                            ${
+                                favorito
+                                    ? "♥"
+                                    : "♡"
+                            }
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </article>
+    `;
+}
 /* ========================================
    BIBLIOTECA
 ======================================== */
@@ -396,34 +480,99 @@ function renderizarBiblioteca() {
     }
 
     mainContent.innerHTML = `
-        <section class="biblioteca">
-            <div class="biblioteca-cabecalho">
-                <div>
-                    <span class="biblioteca-legenda">
-                        SUA COLEÇÃO
+    <section class="library-panel">
+
+        <div class="library-panel-handle"></div>
+
+        <div class="library-panel-content">
+
+            <div class="library-panel-header">
+
+                <div class="library-panel-title-group">
+
+                    <h2>
+                        Sua Biblioteca
+                    </h2>
+
+                    <span class="library-panel-total">
+                        ${filmes.length}
+                        ${
+                            filmes.length === 1
+                                ? "filme"
+                                : "filmes"
+                        }
                     </span>
 
-                    <h2>Minha Biblioteca</h2>
                 </div>
 
-                <span class="biblioteca-total">
-                    ${filmes.length}
-                    ${
-                        filmes.length === 1
-                            ? "filme"
-                            : "filmes"
-                    }
-                </span>
+                <button
+                    type="button"
+                    class="library-sort-button"
+                >
+                    Mais recentes
+                </button>
+
             </div>
 
-            <div class="lista-filmes">
-                ${filmes
-                    .map(criarMovieCard)
-                    .join("")}
+            <div class="library-panel-filters">
+
+                <button
+                    type="button"
+                    class="library-filter is-active"
+                >
+                    Todos
+                </button>
+
+                <button
+                    type="button"
+                    class="library-filter"
+                >
+                    Filmes
+                </button>
+
+                <button
+                    type="button"
+                    class="library-filter"
+                >
+                    Séries
+                </button>
+
+                <button
+                    type="button"
+                    class="library-filter"
+                >
+                    Assistidos
+                </button>
+
+                <button
+                    type="button"
+                    class="library-filter"
+                >
+                    Quero assistir
+                </button>
+
+                <button
+                    type="button"
+                    class="library-filter"
+                >
+                    Favoritos
+                </button>
+
             </div>
-        </section>
-    `;
-}
+
+            <div class="library-carousel">
+
+                ${filmes
+    .map(criarLibraryCard)
+    .join("")}
+
+            </div>
+
+        </div>
+
+    </section>
+`;
+                }
 
 
 /* ========================================
@@ -560,6 +709,17 @@ function ativarInteracoes() {
         botao.addEventListener(
             "click",
             () => {
+                botoesFiltro.forEach(
+    (item) => {
+        item.classList.remove(
+            "is-active"
+        );
+    }
+);
+
+botao.classList.add(
+    "is-active"
+);
                 const filtroConforto =
                     botao.dataset
                         .filterComfort ===
@@ -894,6 +1054,19 @@ function configurarModalAdicionarFilme() {
     const campoPoster = document.querySelector(
         "#moviePoster"
     );
+    const posterDropZone = document.querySelector(
+    "#posterDropZone"
+);
+
+const posterPreview = document.querySelector(
+    "#posterPreview"
+);
+
+const posterPlaceholder = document.querySelector(
+    "#posterPlaceholder"
+);
+
+let posterColado = null;
 
     const campoVisualizacoes =
         document.querySelector(
@@ -966,6 +1139,159 @@ const botaoRemover = document.querySelector(
         Prepara o formulário vazio para adicionar
         um filme completamente novo.
     */
+   function mostrarPreviewPoster(arquivo) {
+    if (!arquivo || !arquivo.type.startsWith("image/")) {
+        return;
+    }
+
+    const urlTemporaria =
+        URL.createObjectURL(arquivo);
+
+    posterPreview.src =
+        urlTemporaria;
+
+    posterPreview.hidden =
+        false;
+
+    posterPlaceholder.hidden =
+        true;
+
+    posterPreview.onload = () => {
+        URL.revokeObjectURL(
+            urlTemporaria
+        );
+    };
+}
+posterDropZone.addEventListener(
+    "click",
+    () => {
+        campoPoster.click();
+    }
+);
+
+campoPoster.addEventListener(
+    "change",
+    () => {
+        const arquivo =
+            campoPoster.files?.[0];
+
+        if (arquivo) {
+            posterColado = null;
+
+            mostrarPreviewPoster(
+                arquivo
+            );
+        }
+    }
+);
+
+document.addEventListener(
+    "paste",
+    (evento) => {
+        if (!modal.classList.contains("is-open")) {
+            return;
+        }
+
+        const arquivos =
+            evento.clipboardData?.files;
+
+        if (arquivos && arquivos.length > 0) {
+            const arquivo = arquivos[0];
+
+            if (arquivo.type.startsWith("image/")) {
+                posterColado = arquivo;
+
+                mostrarPreviewPoster(
+                    arquivo
+                );
+
+                evento.preventDefault();
+
+                return;
+            }
+        }
+
+        const itens =
+            evento.clipboardData?.items;
+
+        if (!itens) {
+            return;
+        }
+
+        for (const item of itens) {
+            if (!item.type.startsWith("image/")) {
+                continue;
+            }
+
+            const arquivo =
+                item.getAsFile();
+
+            if (!arquivo) {
+                continue;
+            }
+
+            posterColado =
+                arquivo;
+
+            mostrarPreviewPoster(
+                arquivo
+            );
+
+            evento.preventDefault();
+
+            return;
+        }
+    }
+);
+
+posterDropZone.addEventListener(
+    "dragover",
+    (evento) => {
+        evento.preventDefault();
+
+        posterDropZone.classList.add(
+            "is-dragging"
+        );
+    }
+);
+
+posterDropZone.addEventListener(
+    "dragleave",
+    () => {
+        posterDropZone.classList.remove(
+            "is-dragging"
+        );
+    }
+);
+
+posterDropZone.addEventListener(
+    "drop",
+    (evento) => {
+        evento.preventDefault();
+
+        posterDropZone.classList.remove(
+            "is-dragging"
+        );
+
+        const arquivo =
+            evento.dataTransfer
+                ?.files?.[0];
+
+        if (
+            arquivo &&
+            arquivo.type.startsWith(
+                "image/"
+            )
+        ) {
+            posterColado =
+                arquivo;
+
+            mostrarPreviewPoster(
+                arquivo
+            );
+        }
+    }
+);
     function prepararNovoFilme() {
         formulario.reset();
 
@@ -1184,7 +1510,8 @@ const generosSelecionados =
         .filter(Boolean);
 
         const arquivoPoster =
-            campoPoster.files?.[0];
+    posterColado ||
+    campoPoster.files?.[0];
 
         if (!titulo) {
             campoTitulo.focus();
@@ -1306,9 +1633,25 @@ renderizarBiblioteca();
 
 formulario.reset();
 campoId.value = "";
+posterColado = null;
 
+posterPreview.hidden = true;
+
+posterPreview.removeAttribute(
+    "src"
+);
+
+posterPlaceholder.hidden = false;
 fecharModal();
+posterColado = null;
 
+posterPreview.hidden = true;
+
+posterPreview.removeAttribute(
+    "src"
+);
+
+posterPlaceholder.hidden = false;
 mostrarConfirmacaoNoBotao
 (
     botaoAbrir,
@@ -1820,4 +2163,6 @@ function configurarModalPrivacidade() {
         }
     );
 }
-iniciarAplicativo();
+iniciarAplicativo().then(() => {
+    configurarLibraryPanel();
+});
