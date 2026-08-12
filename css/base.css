@@ -795,7 +795,7 @@ body {
 
 .movie-modal {
     position: fixed;
-    z-index: 100;
+    z-index: 2000;
     inset: 0;
 
     display: grid;
@@ -2471,4 +2471,38 @@ user-select: none;
 
         0 0 24px rgba(255,185,70,.18);
 
+}
+/* ========================================
+   CONTROLES DO LIBRARY CARD
+======================================== */
+
+.library-card-poster .movie-card-topo {
+    position: absolute;
+
+    top: 12px;
+    left: 12px;
+    right: 12px;
+
+    z-index: 20;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    pointer-events: none;
+}
+
+.library-card-poster .contador-visualizacoes,
+.library-card-poster .botao-assistido,
+.library-card-poster .botao-privacidade,
+.library-card-poster .movie-card-edit {
+    pointer-events: auto;
+}
+
+.library-card-poster .movie-card-controles-direita {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 8px;
 }
