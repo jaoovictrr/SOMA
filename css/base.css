@@ -5,33 +5,40 @@
 
 body {
 
-
     background:
- radial-gradient(
+     linear-gradient(
+        to top,
+        rgba(3, 4, 6, 1) 0%,
+        rgba(3, 4, 6, 0.88) 12%,
+        rgba(3, 4, 6, 0.45) 28%,
+        transparent 48%
+    ),
+        radial-gradient(
             circle at 50% 20%,
             rgba(255, 140, 40, 0.025),
             transparent 35%
         ),
-        #050608;
+        linear-gradient(
+            rgba(7, 9, 15, 0.25),
+            rgba(7, 9, 15, 0.35)
+        ),
+        url("../assets/backgrounds/galaxia-soma.webp")
+        center 180% / cover
+        no-repeat
+        fixed;
 
-   
+    background-color: #07090f;
 
-    color:
-
-    var(--text-primary);
-
+    color: var(--text-primary);
 
     font-family:
-
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
-
-
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
 }
 
 
@@ -53,7 +60,7 @@ body {
 
 
 .topbar {
-    background: #050608;
+    background: transparent;
     border-bottom: none;
     box-shadow: none;
 
@@ -71,7 +78,7 @@ body {
     var(--space-2);
 
 
-   background: #050608;
+   background: transparent;
 
    border-bottom: none;
    box-shadow: none;
@@ -307,6 +314,34 @@ body {
 
         1fr;
 
+        .contador-visualizacoes {
+    min-height: 22px;
+    padding: 2px 6px;
+    font-size: 0.66rem;
+}
+
+.botao-assistido {
+    width: 14px;
+    height: 14px;
+}
+
+.botao-privacidade {
+    width: 24px;
+    height: 24px;
+    font-size: 0.7rem;
+}
+
+.movie-card-edit {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+}
+
+.botao-privacidade:hover {
+    background: rgba(255, 184, 82, 0.08);
+    border-color: rgba(255, 184, 82, 0.18);
+    box-shadow: none;
+}
 
     }
 
@@ -325,7 +360,16 @@ body {
 
 .biblioteca {
     width: 100%;
-    padding-top: px;
+    padding-top: 2px;
+
+    background: rgba(12, 14, 22, 0.62);
+backdrop-filter: blur(18px);
+-webkit-backdrop-filter: blur(18px);
+
+border: 1px solid rgba(255, 184, 76, 0.12);
+
+box-shadow:
+    0 30px 80px rgba(0,0,0,.45);
 }
 
 .biblioteca-cabecalho {
@@ -493,24 +537,49 @@ body {
 .botao-assistido {
     width: 22px;
     height: 22px;
-    border: 2px solid rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-    background: rgba(5, 10, 18, 0.42);
-    box-shadow: 0 0 0 6px rgba(5, 10, 18, 0.32);
-    pointer-events: auto;
+
+    border: 2px solid rgba(255,255,255,.85);
+    border-radius: 5px;
+
+    background: rgba(8,10,14,.45);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    cursor: pointer;
+
     transition:
-        background-color 160ms ease,
-        border-color 160ms ease,
-        transform 160ms ease;
+        background .2s ease,
+        border-color .2s ease,
+        transform .2s ease;
 }
 
-.botao-assistido:hover {
-    transform: scale(1.08);
+.botao-assistido::after {
+    content: "☐";
+
+    color: rgba(255,255,255,.92);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.botao-assistido.ativo::after {
+    content: "☑";
+
+    color: #f6c768;
+    font-size: 15px;
+    line-height: 1;
 }
 
 .botao-assistido.ativo {
-    border-color: #f5b800;
-    background: #f5b800;
+    border-color: rgba(255,184,82,.95);
+    background: rgba(255,184,82,.18);
+}
+
+.botao-assistido:hover {
+    border-color: rgba(255,184,82,.75);
 }
 
 .movie-card-degrade {
@@ -611,9 +680,52 @@ body {
 ======================================== */
 
 @media (max-width: 700px) {
+    /* ===== Topo ===== */
+
+.topbar {
+    padding: 40px 14px 10px;
+    min-height: 72px;
+    align-items: flex-start;
+}
+
+.brand-isotipo {
+    width: 30px;
+    height: 30px;
+}
+
+.brand-name {
+    font-size: 1.05rem;
+    line-height: 1;
+    letter-spacing: 0.12em;
+}
     #mainContent {
         padding: 24px 16px 48px;
     }
+
+    .library-panel {
+    background:
+        linear-gradient(
+            180deg,
+            rgba(4, 5, 8, .22),
+            rgba(3, 4, 6, .18)
+        );
+
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+
+    border: 1px solid rgba(255, 196, 120, .32);
+    border-radius: 28px 28px 0 0;
+}
+
+.library-panel-title-group h2 {
+    font-size: 1.55rem;
+    line-height: 1.05;
+}
+
+.library-panel-total {
+    font-size: 0.72rem;
+}
+
 
     .biblioteca-cabecalho {
         align-items: flex-start;
@@ -656,12 +768,41 @@ body {
         width: 18px;
         height: 18px;
     }
+    /* ===== CABEÇALHO MOBILE ===== */
+
+.topbar {
+    padding: 40px 14px 10px;
+    min-height: 72px;
+    align-items: flex-start;
+}
+
+
+.brand-isotipo {
+    width: 30px;
+    height: 30px;
+}
+
+.brand-name {
+    font-size: 1.05rem;
+    line-height: 1;
+    letter-spacing: 0.12em;
+}
+
+.brand-mobile {
+    display: inline;
+}
+
+.brand-desktop {
+    display: none;
+}
+
 }
 
 @media (max-width: 210px) {
     .lista-filmes {
         grid-template-columns: 1fr;
     }
+
 }
 /* ========================================
    INTERAÇÕES DO MOVIE CARD
@@ -2048,28 +2189,29 @@ max-height:88vh;
 
     overflow:hidden;
 
-    background:
-        linear-gradient(
-            180deg,
-            rgba(16,17,22,.96),
-            rgba(10,11,15,.94)
-        );
+ background:
+    linear-gradient(
+        180deg,
+       rgba(6,7,10,.35)
+rgba(3,4,7,.30)
+    );
 
-    border:1px solid rgba(255,184,82,.22);
+backdrop-filter: blur(5px);
+-webkit-backdrop-filter: blur(18px);
 
-    backdrop-filter:blur(26px);
+border: 2px solid rgba(255,196,120,.40);
 
-    -webkit-backdrop-filter:blur(26px);
-
-    box-shadow:
-        0 -10px 45px rgba(255,170,70,.10),
-        inset 0 1px 0 rgba(255,210,130,.08);
+box-shadow:
+    0 -10px 40px rgba(255,170,70,.05),
+    inset 0 1px 0 rgba(255,255,255,.05);
 
         transition:
     height .45s cubic-bezier(.22,1,.36,1),
     transform .45s cubic-bezier(.22,1,.36,1);
 
+   background-blend-mode: overlay;
 }
+
 
 .library-panel-content{
 
@@ -2205,29 +2347,53 @@ max-height:88vh;
 
 }
 
-.library-panel-handle{
+.library-panel-handle {
+    position: relative;
 
-    width:68px;
+    width: 150px;
+    height: 48px;
 
-    height:6px;
+    margin: 0 auto;
 
-    margin:14px auto 6px;
+    background: transparent;
 
-    border-radius:999px;
+    cursor: grab;
+    pointer-events: auto;
 
-    background:linear-gradient(
+    touch-action: none;
+    user-select: none;
+
+    z-index: 30;
+}
+
+.library-panel-handle::after {
+    content: "";
+
+    position: absolute;
+
+    width: 68px;
+    height: 6px;
+
+    left: 50%;
+    top: 14px;
+
+    transform: translateX(-50%);
+
+    border-radius: 999px;
+
+    background: linear-gradient(
         90deg,
         #ffb454,
         #ffd777
     );
 
-    opacity:.65;
+    opacity: .65;
 
-    cursor: pointer;
-pointer-events: auto;
+    pointer-events: none;
+}
 
-touch-action: none;
-user-select: none;
+.library-panel-handle:active {
+    cursor: grabbing;
 }
 /* ==========================================================
    LIBRARY CARD
@@ -2505,4 +2671,179 @@ user-select: none;
     align-items: center;
 
     gap: 8px;
+}
+textarea{
+    width:100%;
+    min-height:120px;
+
+    padding:14px;
+
+    border-radius:16px;
+
+    border:1px solid rgba(255,184,82,.18);
+
+    background:rgba(255,255,255,.04);
+
+    color:#fff;
+
+    resize:vertical;
+
+    font:inherit;
+}
+
+textarea:focus{
+    outline:none;
+
+    border-color:#ffb852;
+
+    box-shadow:0 0 0 3px rgba(255,184,82,.12);
+}
+.icone-visualizacoes {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 auto;
+}
+/* CONTROLES COMPACTOS DOS PÔSTERES */
+
+.contador-visualizacoes {
+    min-height: 24px;
+    padding: 2px 7px;
+    gap: 4px;
+    font-size: 0.68rem;
+}
+
+.botao-assistido {
+    width: 18px;
+    height: 18px;
+    border-width: 1.5px;
+}
+
+.botao-assistido.ativo::after {
+    font-size: 11px;
+}
+
+.botao-privacidade,
+.movie-card-edit {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
+    font-size: 0.68rem;
+}
+
+.botao-privacidade:hover {
+    background: rgba(255, 184, 82, 0.05);
+    border-color: rgba(255, 184, 82, 0.16);
+    box-shadow: none;
+    transform: none;
+}
+/* ========================================
+   AJUSTES FINAIS MOBILE SOMA
+======================================== */
+
+@media (max-width: 600px) {
+
+   .library-panel {
+    background:
+        linear-gradient(
+            180deg,
+            rgba(2, 3, 5, .40),
+            rgba(1, 2, 4, .34)
+        );
+
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+
+    border: 1px solid rgba(255, 196, 120, .32);
+}
+    }
+
+    .library-panel-title-group h2 {
+        font-size: 1.35rem;
+        line-height: 1.05;
+    }
+
+    .library-panel-total {
+        font-size: .68rem;
+    }
+
+    .library-panel-handle {
+    position: relative;
+
+    width: 54px;
+    height: 5px;
+
+    margin: 12px auto 4px;
+
+    cursor: grab;
+}
+
+/* Área invisível maior para o dedo */
+.library-panel-handle::before {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 140px;
+    height: 48px;
+
+    transform: translate(-50%, -50%);
+
+}
+.library-card-rating {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+}
+
+.estrela-avaliacao {
+    appearance: none;
+    border: 0;
+    padding: 0;
+
+    background: transparent;
+
+    color: rgba(255,255,255,.35);
+
+    font: inherit;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.estrela-avaliacao.ativa {
+    color: #f5b800;
+}
+
+.estrela-avaliacao:hover {
+    color: #ffd05a;
+}
+.movie-card-nota {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+}
+
+.estrela-avaliacao {
+    border: 0;
+    padding: 0;
+    background: transparent;
+
+    color: rgba(255, 255, 255, .35);
+
+    font: inherit;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.estrela-avaliacao.ativa {
+    color: #f5b800;
+}
+
+.estrela-avaliacao:hover {
+    color: #ffd05a;
 }

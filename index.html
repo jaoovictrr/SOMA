@@ -21,7 +21,7 @@
         content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
-    <title>SOMA CINEMA</title>
+    <title>SOMA</title>
 
     <meta name="theme-color" content="#0d1117">
 
@@ -67,7 +67,7 @@
           <a
     class="brand"
     href="./"
-    aria-label="Página inicial do SOMA Cinema"
+    aria-label="Página inicial do SOMA"
 >
     <img
         class="brand-isotipo"
@@ -78,7 +78,7 @@
     >
 
     <span class="brand-name">
-        SOMA CINEMA
+        SOMA 
     </span>
 </a>
 
@@ -219,14 +219,7 @@
 
 </div>
 
-    <button
-        id="openAddMovieButton"
-        class="add-movie-button"
-        type="button"
-    >
-        <span aria-hidden="true">+</span>
-        Adicionar filme
-    </button>
+
 
     <div
         id="movieModal"
@@ -349,7 +342,20 @@
 <small class="movie-form-help">
     Ao editar, deixe este campo vazio para manter o pôster atual.
 </small>
+
     </div>
+<div class="form-group">
+    <label for="movieComments">
+        Comentários
+    </label>
+
+    <textarea
+        id="movieComments"
+        name="comentarios"
+        rows="5"
+        placeholder="Suas anotações sobre este filme..."
+    ></textarea>
+</div>
 
     <div class="movie-form-field comfort-movie-field">
     <label class="comfort-movie-option">

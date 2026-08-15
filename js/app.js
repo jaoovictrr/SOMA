@@ -171,6 +171,10 @@ function normalizarFilmes(listaDeFilmes) {
             filme.nota
         ),
 
+        comentarios: String(
+    filme.comentarios || ""
+),
+
         filmeConforto: Boolean(
             filme.filmeConforto
         ),
@@ -256,7 +260,10 @@ const favorito =
     filme.favorito === true;
 
 const visualizacoes =
-    Number(filme.visualizacoes) || 0;
+    Math.max(
+        0,
+        Number(filme.vezesAssistido) || 0
+    );
 
 const publico =
     filme.privacidade === "publico";
@@ -282,7 +289,27 @@ return `
                         data-action="incrementar-visualizacoes"
                         aria-label="Adicionar visualização"
                     >
-                        ◉ ${visualizacoes}
+                        <svg
+    class="icone-visualizacoes"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+>
+    <path
+        d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+    />
+    <circle
+        cx="12"
+        cy="12"
+        r="3"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+    />
+</svg>
+${visualizacoes}
                     </button>
 
                     <div class="movie-card-controles-direita">
@@ -342,10 +369,30 @@ return `
 
                     <div class="movie-card-rodape">
 
-                        <span class="movie-card-nota">
-                            ${estrelas}
-                        </span>
-
+                        <div
+    class="movie-card-nota"
+    aria-label="Avaliação: ${nota} de 3"
+>
+    ${[1, 2, 3]
+        .map(
+            (valor) => `
+                <button
+                    type="button"
+                    class="estrela-avaliacao ${
+                        valor <= nota ? "ativa" : ""
+                    }"
+                    data-action="avaliar-filme"
+                    data-nota="${valor}"
+                    aria-label="Avaliar com ${valor} ${
+                        valor === 1 ? "estrela" : "estrelas"
+                    }"
+                >
+                    ★
+                </button>
+            `
+        )
+        .join("")}
+</div>
                         <button
                             type="button"
                             class="botao-favorito ${
@@ -393,15 +440,14 @@ function criarLibraryCard(filme) {
             )
         );
 
-    const estrelas =
-        "★".repeat(nota) +
-        "☆".repeat(3 - nota);
-
     const favorito =
         filme.favorito === true;
 
         const visualizacoes =
-    Number(filme.visualizacoes) || 0;
+    Math.max(
+        0,
+        Number(filme.vezesAssistido) || 0
+    );
 
 const assistido =
     filme.assistido === true;
@@ -428,7 +474,28 @@ const publico =
         data-action="incrementar-visualizacoes"
         aria-label="Adicionar visualização"
     >
-        ◉ ${visualizacoes}
+        <svg
+    class="icone-visualizacoes"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+>
+    <path
+        d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+    />
+    <circle
+        cx="12"
+        cy="12"
+        r="3"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+    />
+</svg>
+${visualizacoes}
+
     </button>
 
     <div class="movie-card-controles-direita">
@@ -490,9 +557,34 @@ const publico =
 
                     <div class="library-card-footer">
 
-                        <span class="library-card-rating">
-                            ${estrelas}
-                        </span>
+                       <div
+    class="library-card-rating"
+    aria-label="Avaliação: ${nota} de 3"
+>
+    ${[1, 2, 3]
+        .map(
+            (valor) => `
+                <button
+                    type="button"
+                    class="estrela-avaliacao ${
+                        valor <= nota
+                            ? "ativa"
+                            : ""
+                    }"
+                    data-action="avaliar-filme"
+                    data-nota="${valor}"
+                    aria-label="Avaliar com ${valor} ${
+                        valor === 1
+                            ? "estrela"
+                            : "estrelas"
+                    }"
+                >
+                    ★
+                </button>
+            `
+        )
+        .join("")}
+</div>
 
                         <button
                             type="button"
@@ -642,6 +734,7 @@ function renderizarBiblioteca() {
 
     </section>
 `;
+configurarLibraryPanel();
                 }
 
 
@@ -663,35 +756,48 @@ function renderizarBibliotecaFiltrada(
     }
 
     mainContent.innerHTML = `
-        <section class="biblioteca">
-            <div class="biblioteca-cabecalho">
-                <div>
-                    <span class="biblioteca-legenda">
-                        EXPLORAR
-                    </span>
+        <section class="library-panel">
 
-                    <h2>${titulo}</h2>
+            <div class="library-panel-handle"></div>
+
+            <div class="library-panel-content">
+
+                <div class="library-panel-header">
+
+                    <div class="library-panel-title-group">
+
+                        <h2>
+                            ${titulo}
+                        </h2>
+
+                        <span class="library-panel-total">
+                            ${lista.length}
+                            ${
+                                lista.length === 1
+                                    ? " filme"
+                                    : " filmes"
+                            }
+                        </span>
+
+                    </div>
+
                 </div>
 
-                <span class="biblioteca-total">
-                    ${lista.length}
-                    ${
-                        lista.length === 1
-                            ? "filme"
-                            : "filmes"
-                    }
-                </span>
+                <div class="library-carousel">
+
+                    ${lista
+                        .map(criarLibraryCard)
+                        .join("")}
+
+                </div>
+
             </div>
 
-            <div class="lista-filmes">
-                ${lista
-                    .map(criarMovieCard)
-                    .join("")}
-            </div>
         </section>
     `;
-}
 
+    configurarLibraryPanel();
+}
 
 /* ========================================
    CONTADORES DOS GÊNEROS
@@ -797,6 +903,19 @@ botao.classList.add(
 
                 const genero =
                     botao.dataset.genre;
+                    const fecharGeneros = () => {
+    painelExplorar.classList.remove("is-open");
+
+    painelExplorar.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    botaoExplorar.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+};
 
                 if (filtroConforto) {
                     const filmesConforto =
@@ -811,12 +930,15 @@ botao.classList.add(
                         filmesConforto,
                         "Filmes de conforto"
                     );
-
+fecharGeneros();
+                    
                     return;
                 }
 
                 if (genero === "Todos") {
                     renderizarBiblioteca();
+
+                    fecharGeneros();
 
                     return;
                 }
@@ -836,7 +958,9 @@ botao.classList.add(
                     renderizarBibliotecaFiltrada(
                         filmesDoGenero,
                         genero
+                        
                     );
+                    fecharGeneros();
                 }
             }
         );
@@ -928,9 +1052,9 @@ function tratarCliqueNoCard(evento) {
     }
 
     const card =
-        botao.closest(
-            ".movie-card"
-        );
+    botao.closest(
+        ".movie-card, .library-card"
+    );
 
     if (!card) {
         return;
@@ -955,13 +1079,30 @@ function tratarCliqueNoCard(evento) {
     const acao =
         botao.dataset.action;
 
+        /* AVALIAÇÃO */
+
+if (acao === "avaliar-filme") {
+    const novaNota = Number(
+        botao.dataset.nota
+    );
+
+    if (
+        novaNota >= 1 &&
+        novaNota <= 3
+    ) {
+        filme.nota = novaNota;
+
+        salvarEstadoLocal();
+        renderizarBiblioteca();
+    }
+
+    return;
+}
 
     /* EDITAR FILME */
 
-    if (
-        acao ===
-        "editar-filme"
-    ) {
+    
+     {
         if (
             typeof abrirEditorDeFilme ===
             "function"
@@ -972,6 +1113,25 @@ function tratarCliqueNoCard(evento) {
         }
 
         return;
+
+        /* AVALIAÇÃO */
+
+if (acao === "avaliar-filme") {
+    const novaNota =
+        Number(botao.dataset.nota);
+
+    if (
+        novaNota >= 1 &&
+        novaNota <= 3
+    ) {
+        filme.nota = novaNota;
+
+        salvarEstadoLocal();
+        renderizarBiblioteca();
+    }
+
+    return;
+}
     }
 
 /* REMOVER FILME */
@@ -1159,6 +1319,11 @@ const botaoRemover = document.querySelector(
     "#deleteMovieButton"
 );
 
+const campoComentarios =
+    document.querySelector(
+        "#movieComments"
+    );
+
     const botoesFechar =
         document.querySelectorAll(
             "[data-close-modal]"
@@ -1172,6 +1337,7 @@ const botaoRemover = document.querySelector(
         !campoTitulo ||
         !campoAno ||
         !campoPoster ||
+        !campoComentarios ||
         !campoVisualizacoes ||
         !tituloModal ||
         !legendaModal ||
@@ -1407,6 +1573,8 @@ posterDropZone.addEventListener(
             String(
                 filme.vezesAssistido || 0
             );
+            
+            campoComentarios.value = filme.comentarios || "";
 
         const opcaoAssistido =
             formulario.querySelector(
@@ -1415,7 +1583,9 @@ posterDropZone.addEventListener(
 
         if (opcaoAssistido) {
             opcaoAssistido.checked = true;
+
         }
+    
 
         const nota = Math.max(
             1,
@@ -1529,6 +1699,10 @@ botaoRemover.addEventListener(
                 ""
         ).trim();
 
+        const comentarios = String(
+    dadosFormulario.get("comentarios") || ""
+).trim();
+
         const anoDigitado = String(
             dadosFormulario.get("ano") ||
                 ""
@@ -1634,6 +1808,8 @@ const generosSelecionados =
 
     filmeExistente.titulo = titulo;
 
+    filmeExistente.comentarios = comentarios;
+
     filmeExistente.ano =
         anoDigitado || "—";
 
@@ -1667,6 +1843,7 @@ if (filmeConforto) {
         id: criarIdUnico(),
 
         titulo,
+        comentarios,
 
         ano:
             anoDigitado || "—",

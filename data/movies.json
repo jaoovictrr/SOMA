@@ -1,5 +1,25 @@
 [
   {
+    "id": "TITO-2021",
+    "titulo": "TITO: Até o fim",
+    "ano": 2021,
+    "generos": [
+      "Ficção Científica",
+      "Drama",
+      "Aventura"
+    ],
+    "poster": "./assets/icons/posters/TITO.webp",
+    "assistido": false,
+    "favorito": false,
+    "vezesAssistido": 830,
+    "nota": 3,
+    "filmeConforto": false,
+    "privacidade": "privado",
+    "criadoPeloUsuario": false,
+    "dataAdicionado": "2026-08-04"
+  },
+
+  {
     "id": 1,
     "titulo": "Interestelar",
     "ano": 2014,

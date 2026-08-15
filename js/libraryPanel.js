@@ -1,111 +1,214 @@
 export function configurarLibraryPanel() {
-    const painel = document.querySelector(".library-panel");
-    const handle = document.querySelector(".library-panel-handle");
+    const painel =
+        document.querySelector(
+            ".library-panel"
+        );
 
-    console.log("painel:", painel);
-    console.log("handle:", handle);
+    const handle =
+        document.querySelector(
+            ".library-panel-handle"
+        );
 
     if (!painel || !handle) {
-        console.error("Library Panel não encontrado.");
         return;
     }
 
-    painel.classList.add("is-medium");
-
-    handle.addEventListener("click", () => {
-        console.log("CLIQUE NA BARRINHA");
-
-        if (painel.classList.contains("is-expanded")) {
-            painel.classList.remove("is-expanded");
-            painel.classList.add("is-medium");
-        } else {
-            painel.classList.remove("is-medium");
-            painel.classList.add("is-expanded");
-        }
-
-        console.log("classe atual:", painel.className);
-
-        let arrastando = false;
-let inicioY = 0;
-let alturaInicial = 0;
-
-handle.addEventListener("pointerdown", (evento) => {
-    arrastando = true;
-
-    inicioY = evento.clientY;
-    alturaInicial = painel.offsetHeight;
-
-    painel.style.transition = "none";
-
-    handle.setPointerCapture(
-        evento.pointerId
+    painel.classList.remove(
+        "is-expanded"
     );
-});
 
-handle.addEventListener("pointermove", (evento) => {
-    if (!arrastando) {
-        return;
-    }
+    painel.classList.add(
+        "is-medium"
+    );
 
-    const deslocamento =
-        inicioY - evento.clientY;
+    let arrastando = false;
+    let inicioY = 0;
+    let alturaInicial = 0;
+    let movimentoTotal = 0;
 
-    const novaAltura =
-        alturaInicial + deslocamento;
 
-    const alturaMinima =
-        window.innerHeight * 0.58;
+    /* ========================================
+       COMEÇAR ARRASTE
+    ======================================== */
 
-    const alturaMaxima =
-        window.innerHeight * 0.88;
+    handle.addEventListener(
+        "pointerdown",
+        
+        (evento) => {
+            arrastando = true;
 
-    const alturaLimitada =
-        Math.min(
-            alturaMaxima,
-            Math.max(
-                alturaMinima,
-                novaAltura
-            )
-        );
+            inicioY =
+                evento.clientY;
 
-    painel.style.height =
-        `${alturaLimitada}px`;
-});
+            alturaInicial =
+                painel.offsetHeight;
 
-handle.addEventListener("pointerup", () => {
-    if (!arrastando) {
-        return;
-    }
+            movimentoTotal = 0;
 
-    arrastando = false;
+            painel.style.transition =
+                "none";
 
-    painel.style.transition = "";
+            handle.setPointerCapture(
+                evento.pointerId
+            );
+            console.log("pointerdown", evento.clientY);
+        }
+    );
 
-    const limite =
-        window.innerHeight * 0.73;
 
-    if (
-        painel.offsetHeight >
-        limite
-    ) {
-        painel.classList.remove(
-            "is-medium"
-        );
+    /* ========================================
+       ARRASTAR
+    ======================================== */
 
-        painel.classList.add(
-            "is-expanded"
-        );
-    } else {
-        painel.classList.remove(
-            "is-expanded"
-        );
+    handle.addEventListener(
+        "pointermove",
+        (evento) => {
+            if (!arrastando) {
+                return;
+            }
 
-        painel.classList.add(
-            "is-medium"
-        );
-    }
+            const deslocamento =
+                inicioY -
+                evento.clientY;
 
-    painel.style.height = "";
-});
-    });
+            movimentoTotal =
+                Math.abs(
+                    deslocamento
+                );
+
+            const novaAltura =
+                alturaInicial +
+                deslocamento;
+
+            const alturaMinima =
+                window.innerHeight *
+                0.44;
+
+            const alturaMaxima =
+                window.innerHeight *
+                0.88;
+
+            const alturaLimitada =
+                Math.min(
+                    alturaMaxima,
+                    Math.max(
+                        alturaMinima,
+                        novaAltura
+                    )
+                );
+
+            painel.style.height =
+                `${alturaLimitada}px`;
+
+                console.log("pointermove", evento.clientY);
+        }
+    );
+
+
+    /* ========================================
+       SOLTAR
+    ======================================== */
+
+    handle.addEventListener(
+        "pointerup",
+        () => {
+            if (!arrastando) {
+                return;
+            }
+
+            arrastando = false;
+
+            painel.style.transition =
+                "height .35s cubic-bezier(.22,1,.36,1)";
+
+
+            /* Clique simples na barrinha */
+
+            if (movimentoTotal < 8) {
+
+                painel.style.height = "";
+
+                if (
+                    painel.classList.contains(
+                        "is-expanded"
+                    )
+                ) {
+                    painel.classList.remove(
+                        "is-expanded"
+                    );
+
+                    painel.classList.add(
+                        "is-medium"
+                    );
+                } else {
+                    painel.classList.remove(
+                        "is-medium"
+                    );
+
+                    painel.classList.add(
+                        "is-expanded"
+                    );
+                }
+
+                return;
+
+                console.log("pointerup");
+            }
+
+
+            /* Arraste real */
+
+            const alturaAtual =
+                painel.offsetHeight;
+
+            const limiteRecolher =
+                window.innerHeight *
+                0.52;
+
+
+            /*
+                Puxou bastante para baixo:
+                recolhe automaticamente.
+            */
+
+            if (
+                alturaAtual <=
+                limiteRecolher
+            ) {
+                painel.classList.remove(
+                    "is-medium",
+                    "is-expanded"
+                );
+
+                painel.style.height =
+                    "44vh";
+
+                return;
+            }
+
+
+            /*
+                Para cima:
+                permanece exatamente
+                onde o SOMER soltou.
+            */
+
+            painel.classList.remove(
+                "is-medium",
+                "is-expanded"
+            );
+
+            painel.style.height =
+                `${alturaAtual}px`;
+        }
+    );
+
+
+    handle.addEventListener(
+        "pointercancel",
+        () => {
+            arrastando = false;
+            painel.style.transition = "";
+        }
+    );
 }
